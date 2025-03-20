@@ -10,7 +10,8 @@ bot = discord.Bot()
 
 @bot.event
 async def on_connect():
-     print(f"{bot.user.name} connected.")
+    print(f"{bot.user.name} connected.")
+    await bot.sync_commands()
 
 @bot.command(description="Mostra latência do bot")
 async def ping(ctx):
