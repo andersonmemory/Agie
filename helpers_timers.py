@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-
-
-## TODO: abstract repeating functions inside Views. Refactor it.
-
 color_map = {
     "❤️ Vermelho":"vermelho",
     "🧡 Laranja":"laranja",
@@ -305,5 +301,3 @@ def stabilish_connection():
 def close_connection(connection, cursor):
     connection.close()
     cursor.close()
-
-    # print("Sucess, closed connection")
