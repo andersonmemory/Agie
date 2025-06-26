@@ -1,0 +1,48 @@
+import discord
+import helpers
+
+class MyModal(discord.ui.Modal,):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.add_item(discord.ui.InputText(label="Digite sua passphrase de moderador"))
+
+    # async def callback(self, interaction: discord.Interaction):
+    #     interaction.response("Sucesso!", ephemeral=True)
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="Modal Results")
+        embed.add_field(name=" ", value=self.children[0].value)
+
+class Pomodoro(discord.ui.Modal,):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
+        self.add_item(discord.ui.InputText(label="Tempo do pomodoro (em minutos):"))
+        self.add_item(discord.ui.InputText(label="Tempo do short break (em minutos):"))
+        self.add_item(discord.ui.InputText(label="Tempo do long break (em minutos):"))
+        self.add_item(discord.ui.InputText(label="Quantos rounds para o long_break?"))
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="As configurações foram alteradas com sucesso!")
+        embed.color = discord.Color.green()
+        
+        all_values = [self.children[0].value, self.children[1].value, self.children[2].value, self.children[3].value]
+
+        for value in all_values:
+            if (int(value) < 0 or int(value) > 255) or not value.isdigit():
+
+                embed.title = "Algo ocorreu errado!"
+                embed.color = discord.Colour.red()
+                embed.add_field(name=" ", value=f"Você inseriu algum valor que não foi considerado válido", inline=False)
+
+                await interaction.response.send_message(embeds=[embed], ephemeral=True)     
+
+                break
+        else:
+            embed.add_field(name=" ", value=f"Pomodoro: {self.children[0].value}", inline=False)
+            embed.add_field(name=" ", value=f"Short break: {self.children[1].value}", inline=False)
+            embed.add_field(name=" ", value=f"Long break: {self.children[2].value}", inline=False)
+            embed.add_field(name=" ", value=f"Intervalo para long break: {self.children[3].value}", inline=False)
+            
+            await interaction.response.send_message(embeds=[embed], ephemeral=True)     
