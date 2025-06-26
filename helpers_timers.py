@@ -102,12 +102,12 @@ class AppearanceChooseTimer(discord.ui.View):
     @discord.ui.button(label="Pomodoro", style=discord.ButtonStyle.primary, emoji="🍅") 
     async def pomodoro(self, button, interaction):
     
-        await interaction.response.send_message(f"", view=AppearancePomo(), ephemeral=True, delete_after=12)
+        await interaction.response.send_message("> Escolha o momento que quer mudar a cor:", view=AppearancePomo(), ephemeral=True, delete_after=12)
 
     @discord.ui.button(label="Cronômetro", style=discord.ButtonStyle.primary, emoji="⏱️") 
     async def stopwatch(self, button, interaction):
     
-        await interaction.response.send_message("> Teste", ephemeral=True)
+        await interaction.response.send_message("", view=AppearanceStopwatch(), ephemeral=True, delete_after=12)
 
 class AppearancePomo(discord.ui.View):
 
@@ -122,12 +122,7 @@ class AppearancePomo(discord.ui.View):
 
 class AppearancePomoPomodoro(discord.ui.View):
 
-    @discord.ui.select( 
-        placeholder = "Escolha uma cor",
-        min_values = 1,
-        max_values = 1,
-        options = colors
-    )   
+    @discord.ui.select(placeholder = "Escolha uma cor", min_values = 1, max_values = 1, options = colors)   
     async def select_callback(self, select, interaction):
 
         bot = stabilish_connection()
@@ -169,12 +164,7 @@ class AppearancePomoPomodoro(discord.ui.View):
 
 class AppearancePomoBreak(discord.ui.View):
 
-    @discord.ui.select( 
-        placeholder = "Escolha uma cor",
-        min_values = 1,
-        max_values = 1,
-        options = colors
-    )   
+    @discord.ui.select(placeholder = "Escolha uma cor", min_values = 1, max_values = 1, options = colors)   
     async def select_callback(self, select, interaction):
 
         bot = stabilish_connection()
@@ -239,7 +229,7 @@ class AppearanceStopwatch(discord.ui.View):
                 UPDATE
                     timer_visual_preferences as tvp
                 SET
-                    tvp.break_color = (?)
+                    tvp.stopwatch_color = (?)
                 WHERE
                     tvp.user_id = (?)
             """, (color_map[select.values[0]], interaction.user.id))
