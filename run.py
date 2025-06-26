@@ -25,7 +25,7 @@ class Agie(discord.Bot): # subclass discord.Bot
         try:
 
             self.connection = mariadb.connect(
-                user=os.getenv("ROOT"),
+                user=os.getenv("DB_USER"),
                 password=os.getenv("PASSWORD"),
                 host=os.getenv("HOST"),
                 database=os.getenv("DATABASE")

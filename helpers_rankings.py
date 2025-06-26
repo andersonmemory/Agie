@@ -113,7 +113,7 @@ class FocusRankings(discord.ui.View): # Create a class called MyView that subcla
 def stabilish_connection():    
     try:
         connection = mariadb.connect(
-            user=os.getenv("ROOT"),
+            user=os.getenv("DB_USER"),
             password=os.getenv("PASSWORD"),
             host=os.getenv("HOST"),
             database=os.getenv("DATABASE")
