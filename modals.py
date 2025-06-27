@@ -60,7 +60,7 @@ class PomoAppearenceImageValidateModal(discord.ui.Modal):
         embed = discord.Embed(title="A imagem foi alterada com sucesso!")
         embed.color = discord.Color.green()
 
-        result = re.search("/^(https:)\/\/(c\.tenor\.com)?(media\.tenor\.com)?\/([0-9a-z--_]*)\.(gif$)?(webp$)?/gm", self.children[0].value)
+        result = re.search(r"/^(https:)\/\/(c\.tenor\.com)?(media\.tenor\.com)?\/([0-9a-z--_]*)\.(gif$)?(webp$)?/gm", self.children[0].value)
 
         if result:
             await interaction.response.send_message(embed=embed, ephemeral=True)
