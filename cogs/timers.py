@@ -152,7 +152,7 @@ class Timers(commands.Cog):
 
                 epoch = time.time()
 
-                if member_left["seconds"] < 60:
+                if member_left["seconds"] < 60 and not member_left["on_break"]:
                     await member_left["message"].delete()
 
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
