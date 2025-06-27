@@ -172,7 +172,6 @@ class AppearancePomo(discord.ui.View):
 
         else:
             close_connection(bot["connection"], bot["cursor"])
-            # await interaction.response.send_message(content="Invalid")
             return
 
 class AppearancePomoPomodoro(discord.ui.View):
@@ -186,12 +185,6 @@ class AppearancePomoPomodoro(discord.ui.View):
                     title="Sucesso!",
                         color=discord.Colour.green(),
                     )
-        
-
-        # user_typed_link 
-
-        # re.search( "^https:\/\/c.tenor.com\/\w+\/tenor.gif$", user_typed_link)
-
         try:
 
             bot["cursor"].execute(
