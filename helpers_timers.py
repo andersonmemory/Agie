@@ -137,7 +137,7 @@ class AppearancePomo(discord.ui.View):
 
         value = breakImageModal.children[0].value
 
-        result = re.search(r"^https:\/\/c.tenor.com\/\w+\/tenor.gif$", value)
+        result = re.search(r"/^(https:)\/\/(c\.tenor\.com)?(media\.tenor\.com)?\/([0-9a-z--_]*)\.(gif$)?(webp$)?/gm", value)
 
         if result:
 
