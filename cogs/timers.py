@@ -63,8 +63,6 @@ class Timers(commands.Cog):
             on_stopwatch_channel = stopwatch_channel == after.channel
 
             global voice_channel_members
-
-            print(voice_channel_members)
             
             if not member.bot and (on_pomodoro_channel or on_stopwatch_channel):
 
@@ -87,10 +85,7 @@ class Timers(commands.Cog):
                         tvp.user_id = (?)
                 """, (member.id,))
 
-
-
                 member_info = self.cursor.fetchall()[0]
-                print(member_info)
 
                 voice_channel_members.append({
                     "message": None,
@@ -117,8 +112,6 @@ class Timers(commands.Cog):
                     })
 
                 self.connection.commit()
-
-                print(f"Pomodoro image is: {member_info[7]}")
 
             if not study_counter_task.is_running():
                 study_counter_task.start(channel)
@@ -152,12 +145,16 @@ class Timers(commands.Cog):
 
                 epoch = time.time()
 
-                if member_left["seconds"] < 60 and not member_left["on_break"]:
+                if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"]:
                     await member_left["message"].delete()
-
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
-
                     await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
+                
+                elif not member_left["pomodoro_enabled"] and member_left["seconds"] < 60:
+                    await member_left["message"].delete()
+                    embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
+                    await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
+
                 else:
 
                     date = str(datetime.datetime.today()).split('.')[0]
