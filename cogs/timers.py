@@ -177,11 +177,11 @@ class Timers(commands.Cog):
 
                         if total_hours != 0:
 
-                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n {member_left['global_name']} se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
+                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
 
                         else:
 
-                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n {member_left['global_name']} se concentrou por {total_minutes} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
+                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_minutes} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
 
                         self.cursor.execute("INSERT INTO focus_sessions (focus_datetime, duration_minutes, user_id) VALUES (?, ?, ?)", (date, total_minutes, user_id)) 
                         self.connection.commit()
