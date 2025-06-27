@@ -118,6 +118,8 @@ class Timers(commands.Cog):
 
                 self.connection.commit()
 
+                print(f"Pomodoro image is: {member_info[7]}")
+
             if not study_counter_task.is_running():
                 study_counter_task.start(channel)
 
@@ -212,13 +214,13 @@ class Timers(commands.Cog):
         # check first if user is in voice call before doing it
         for member in voice_channel_members:
             if ctx.author.id == member["id"]:
-                await ctx.respond("Por favor, saia da call primeiro antes de fazer a configuração", ephemeral=True)
+                await ctx.respond("Por favor, saia da call primeiro antes de fazer a configuração", ephemeral=True, delete_after=12)
                 return
 
 
-        await ctx.respond(content="", view=helpers_timers.ConfigPomodoro())
+        await ctx.respond(content="", view=helpers_timers.ConfigPomodoro(), ephemeral=True, delete_after=7)
 
-    @discord.slash_command(description="creates a button")
+    @discord.slash_command(description="Mostra o rank dos membros mais focados!")
     async def rank(self, ctx):
 
         self.connection = self.bot.connection
@@ -306,7 +308,14 @@ async def study_counter_task(channel):
 
                         embed.set_author(name="Mente Ágil", icon_url="https://cdn.discordapp.com/attachments/1219843085341560872/1362999843211186248/Logo_.png?ex=685978c5&is=68582745&hm=59fc7659e42d531a4f663d20ca6e9c0324b2dd7f3ec2d4e9a4d1a5dbd974cf1e&")
                         embed.add_field(name=" ", value=f"> <@{member["id"]}>. Pausa! Ufa... {random.choice(emojis)} \n 🍅 ({int(member["pomodoro"]/60)}/{int(member["short_break"]/60)}). Próximo round: {member["current_round"] + 1} \n <t:{int(epoch)}:R>")
-                        embed.set_thumbnail(url="https://media.tenor.com/1re8tSKaslIAAAAi/peach-cat-goma.gif")
+                        
+                        if member["pomodoro_image"] != None:
+
+                            embed.set_thumbnail(url=member["pomodoro_image"])
+
+                        else:
+                        
+                            embed.set_thumbnail(url="https://media.tenor.com/1re8tSKaslIAAAAi/peach-cat-goma.gif")
 
                         await channel.send(content=f"<@{member["id"]}>", delete_after=1)
                         member["message"] = await channel.send(embed=embed)

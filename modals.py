@@ -1,5 +1,7 @@
 import discord
 import helpers
+import re
+
 
 class MyModal(discord.ui.Modal,):
     def __init__(self, *args, **kwargs) -> None:
@@ -45,4 +47,26 @@ class Pomodoro(discord.ui.Modal,):
             embed.add_field(name=" ", value=f"Long break: {self.children[2].value}", inline=False)
             embed.add_field(name=" ", value=f"Intervalo para long break: {self.children[3].value}", inline=False)
             
-            await interaction.response.send_message(embeds=[embed], ephemeral=True)     
+            await interaction.response.send_message(embeds=[embed], ephemeral=True)
+
+class PomoAppearenceImageValidateModal(discord.ui.Modal):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+    
+        self.add_item(discord.ui.InputText(label="Insira o link da sua imagem"))
+
+    async def callback(self, interaction: discord.Interaction):
+
+        embed = discord.Embed(title="A imagem foi alterada com sucesso!")
+        embed.color = discord.Color.green()
+
+        result = re.search(r"^https:\/\/c.tenor.com\/\w+\/tenor.gif$", self.children[0].value)
+
+        if result:
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            embed.title = "Algo ocorreu errado!"
+            embed.color = discord.Colour.red()
+            embed.add_field(name=" ", value=f"Você inseriu algum valor que não foi considerado válido. Apenas gifs do tenor são aceitos.", inline=False)
+            embed.add_field(name=" ", value=f"Lembre-se que seu link deve estar no formato: \n ```https://c.tenor.com/1Abcde2fgh34ij/tenor.gif``` \n Peça ajuda no <#1363005746018521118> caso ainda esteja em dificuldades.", inline=False)
+            await interaction.response.send_message(embed=embed, ephemeral=True)

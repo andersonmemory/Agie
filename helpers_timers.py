@@ -3,6 +3,7 @@ import modals
 
 import mariadb
 
+import re
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -111,14 +112,68 @@ class AppearanceChooseTimer(discord.ui.View):
 
 class AppearancePomo(discord.ui.View):
 
-    @discord.ui.button(label="Pomodoro", style=discord.ButtonStyle.primary, emoji="🍅")
+    @discord.ui.button(label="Cor em pomodoro", style=discord.ButtonStyle.primary, emoji="🍅")
     async def pomodoro(self, button, interaction):
 
         await interaction.response.send_message(f"", view=AppearancePomoPomodoro(), ephemeral=True, delete_after=12)
 
-    @discord.ui.button(label="Break", style=discord.ButtonStyle.primary, emoji="⏸️")
+    @discord.ui.button(label="Cor em pausa", style=discord.ButtonStyle.primary, emoji="⏸️")
     async def pomodoro_break(self, button, interaction):
         await interaction.response.send_message(f"", view=AppearancePomoBreak(), ephemeral=True, delete_after=12)
+
+    @discord.ui.button(label="Imagem em pausa", style=discord.ButtonStyle.primary, emoji="🖼️")
+    async def pomodoro_break_image(self, button, interaction):
+
+        bot = stabilish_connection()
+
+        embed = discord.Embed(
+                    title="Sucesso!",
+                        color=discord.Colour.green(),
+                    )
+
+        breakImageModal = modals.PomoAppearenceImageValidateModal(title="Adição de imagem em pausa")
+        await interaction.response.send_modal(breakImageModal)
+        await breakImageModal.wait()
+
+        value = breakImageModal.children[0].value
+
+        result = re.search(r"^https:\/\/c.tenor.com\/\w+\/tenor.gif$", value)
+
+        if result:
+
+            try:
+
+                bot["cursor"].execute(
+                """
+                    UPDATE
+                        timer_visual_preferences as tvp
+                    SET
+                        tvp.pomodoro_image = (?)
+                    WHERE
+                        tvp.user_id = (?)
+                """, (value, interaction.user.id))
+
+                bot["connection"].commit()
+
+                embed.add_field(name=" ", value="A imagem foi atualizada.")
+
+                close_connection(bot["connection"], bot["cursor"])
+
+            except mariadb.Error as e:
+
+                embed.title = "Erro!"
+                embed.color = discord.Colour.red()
+                embed.add_field(name=" ", value="Ocorreu algum erro ao tentar atualizar a imagem.")
+                close_connection(bot["connection"], bot["cursor"])
+
+
+                await interaction.response.send_message(content="", embed=embed, ephemeral=True, delete_after=3)
+                return
+
+        else:
+            close_connection(bot["connection"], bot["cursor"])
+            # await interaction.response.send_message(content="Invalid")
+            return
 
 class AppearancePomoPomodoro(discord.ui.View):
 
@@ -132,6 +187,11 @@ class AppearancePomoPomodoro(discord.ui.View):
                         color=discord.Colour.green(),
                     )
         
+
+        # user_typed_link 
+
+        # re.search( "^https:\/\/c.tenor.com\/\w+\/tenor.gif$", user_typed_link)
+
         try:
 
             bot["cursor"].execute(
