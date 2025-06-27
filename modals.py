@@ -68,5 +68,5 @@ class PomoAppearenceImageValidateModal(discord.ui.Modal):
             embed.title = "Algo ocorreu errado!"
             embed.color = discord.Colour.red()
             embed.add_field(name=" ", value=f"Você inseriu algum valor que não foi considerado válido. Apenas gifs do tenor são aceitos.", inline=False)
-            embed.add_field(name=" ", value=f"Lembre-se que seu link deve estar no formato: \n ```https://c.tenor.com/1Abcde2fgh34ij/tenor.gif``` \n Peça ajuda no <#1363005746018521118> caso ainda esteja em dificuldades.", inline=False)
+            embed.add_field(name=" ", value=f"Lembre-se que seu link deve estar no formato: \n ```https://c.tenor.com/1Abcde2fgh34ij/tenor.gif``` \n ou no formato ```https://media.tenor/abcdefgh124-ijkl/mnopq.gif``` \n Peça ajuda no <#1363005746018521118> caso ainda esteja em dificuldades.", inline=False)
             await interaction.response.send_message(embed=embed, ephemeral=True)
