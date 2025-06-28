@@ -104,4 +104,4 @@ async def on_member_remove(member):
 bot.load_extension('cogs.messages')
 bot.load_extension('cogs.moderation')
 bot.load_extension('cogs.timers')
-bot.run(os.getenv("BOT_TOKEN"))
+bot.run(os.getenv("BOT_TOKEN_FEATURE"))
