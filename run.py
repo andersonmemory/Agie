@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+import matplotlib.pyplot as plt
+import random
+
 intents = discord.Intents(messages=True, guilds=True)
 intents.members = True
 intents.message_content = True
@@ -101,7 +104,17 @@ async def on_member_remove(member):
     bot.cursor.execute("DELETE FROM discord_users WHERE discord_users.id = (?)", (member.id,))
     bot.connection.commit()
 
+@bot.command(description="Gera um gráfico pessoal do membro")
+async def grafico(ctx):
+
+    plt.bar([x for x in range(7)], [random.uniform(0.3,8.0) for x in range(7)])
+    plt.savefig("graph.jpeg")
+
+    # await channel.send(file=discord.File('graph.jpeg'))
+    
+    await ctx.send(file=discord.File('graph.jpeg'))
+
 bot.load_extension('cogs.messages')
 bot.load_extension('cogs.moderation')
 bot.load_extension('cogs.timers')
-bot.run(os.getenv("BOT_TOKEN_FEATURE"))
+bot.run(os.getenv("BOT_TOKEN_DEVELOPING"))
