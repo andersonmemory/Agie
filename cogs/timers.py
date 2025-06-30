@@ -145,7 +145,7 @@ class Timers(commands.Cog):
 
                 epoch = time.time()
 
-                if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"]:
+                if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"] and member_left["seconds"] < 60:
                     await member_left["message"].delete()
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
                     await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
