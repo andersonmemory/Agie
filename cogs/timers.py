@@ -145,7 +145,7 @@ class Timers(commands.Cog):
 
                 epoch = time.time()
 
-                if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"]:
+                if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"] and member_left["seconds"] < 60:
                     await member_left["message"].delete()
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
                     await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
@@ -174,11 +174,11 @@ class Timers(commands.Cog):
 
                         if total_hours != 0:
 
-                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
+                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes%60 > 1 else '**minuto**'}.")
 
                         else:
 
-                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_minutes} {'**minutos**' if total_minutes > 1 else '**minuto**'}.")
+                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_minutes} {'**minutos**' if total_minutes%60 > 1 else '**minuto**'}.")
 
                         self.cursor.execute("INSERT INTO focus_sessions (focus_datetime, duration_minutes, user_id) VALUES (?, ?, ?)", (date, total_minutes, user_id)) 
                         self.connection.commit()
