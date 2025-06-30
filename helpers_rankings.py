@@ -137,6 +137,8 @@ def build_list(information):
     length = len(ranking_list)
 
     match length:
+        case 0:
+            ranking_list.append("A lista está vazia!")
         case 1:
             ranking_list[0] = "🥇" + ranking_list[0]
         case 2:
