@@ -107,11 +107,71 @@ async def on_member_remove(member):
 @bot.command(description="Gera um gráfico pessoal do membro")
 async def grafico(ctx):
 
-    plt.bar([x for x in range(7)], [random.uniform(0.3,8.0) for x in range(7)])
+    user_id = int(ctx.author.id)
+
+    bot.cursor.execute("""
+    SET @initial_date = (
+        SELECT DATE(focus_datetime) - INTERVAL 1 DAY
+        FROM focus_sessions as fs
+        WHERE fs.user_id = (?)
+        ORDER BY fs.focus_datetime ASC
+        LIMIT 1
+        );
+    """, (user_id,))
+                       
+    bot.cursor.execute("SET @end_date = DATE(CURDATE());")
+
+    bot.cursor.execute("""
+    SET @difference = (
+            SELECT DATEDIFF(@end_date, @initial_date) 
+        );
+    """)
+    
+    bot.cursor.execute(
+    """
+    SELECT CONCAT(LPAD(DAY(dt.dates), 2, '0'), '/', LPAD(MONTH(dt.dates), 2, '0')) AS dates,
+        COALESCE(fs.minutes/60, 0) AS minutes
+            FROM (WITH RECURSIVE number AS (
+            SELECT 1 AS num
+            UNION ALL
+            SELECT num + 1
+            FROM number
+            WHERE num < @difference
+            ) SELECT @initial_date + INTERVAL num DAY AS dates FROM number) AS dt
+        LEFT JOIN
+            (SELECT 
+            CONCAT('<@', user_id, '>') as user_id,
+            FLOOR(SUM(fst.duration_minutes)/60) AS hours,
+            SUM(fst.duration_minutes)%60 AS minutes,
+            fst.focus_datetime
+        FROM 
+            focus_sessions AS fst
+        WHERE
+            user_id = (?)
+        GROUP BY
+            DATE(fst.focus_datetime)) AS fs
+        ON
+        DATE(fs.focus_datetime) = dt.dates
+        ORDER BY
+            dt.dates;
+    """, (user_id,))
+
+    bot.connection.commit()
+    
+    content = bot.cursor.fetchall()
+
+    x_values = [data_point[0] for data_point in content]
+    y_values = [data_point[1] for data_point in content]
+
+    fig, ax = plt.subplots()
+    ax.plot(x_values, y_values, label=f"{ctx.author.global_name}")
+    ax.set_xlabel('Dias')
+    ax.set_ylabel('Horas')
+    ax.set_title(f"Tempo de foco de {ctx.author.global_name}")
+    ax.legend()
+
     plt.savefig("graph.jpeg")
 
-    # await channel.send(file=discord.File('graph.jpeg'))
-    
     await ctx.send(file=discord.File('graph.jpeg'))
 
 bot.load_extension('cogs.messages')
