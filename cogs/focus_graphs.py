@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import matplotlib.pyplot as plt
 import re
+import os
 
 async def verify_additional_user_plot(ctx, bot, user : str):
     if user:
@@ -39,6 +40,8 @@ class FocusGraphs(commands.Cog):
 
         fig, ax = plt.subplots()
         ax.plot(first_plot[0], first_plot[1], label=f"{ctx.author.global_name}")
+        ax.fill_between(first_plot[0], first_plot[1], alpha=0.15)
+
 
         if user1:
             try:
@@ -60,11 +63,12 @@ class FocusGraphs(commands.Cog):
         ax.set_title(f"Tempo de foco de {ctx.author.global_name}{',' if third_plot else ' e '}{f" {second_plot[1].global_name}" if second_plot else '' }{' e ' if third_plot else ''}{third_plot[1].global_name if third_plot else ''}.")
         ax.legend()
         ax.grid()
-        ax.fill_between(first_plot[0], first_plot[1], alpha=0.15)
 
         plt.savefig("graph.jpeg")
 
         await ctx.send(file=discord.File('graph.jpeg'))
+
+        os.remove("graph.jpeg")
 
 def create_plot(user_id, cursor, connection):
 
@@ -89,30 +93,31 @@ def create_plot(user_id, cursor, connection):
         cursor.execute(
         """
         SELECT CONCAT(LPAD(DAY(dt.dates), 2, '0'), '/', LPAD(MONTH(dt.dates), 2, '0')) AS dates,
-            ROUND(COALESCE(CAST(fs.minutes AS DECIMAL(10, 2))/60.0, 0), 1) AS minutes
-                FROM (WITH RECURSIVE number AS (
+            COALESCE(FORMAT(fs.hours, 2), 0) AS hours
+            FROM (WITH RECURSIVE number AS (
                 SELECT 1 AS num
                 UNION ALL
                 SELECT num + 1
                 FROM number
                 WHERE num < @difference
                 ) SELECT @initial_date + INTERVAL num DAY AS dates FROM number) AS dt
-            LEFT JOIN
-                (SELECT 
+        LEFT JOIN
+            (SELECT 
                 CONCAT('<@', user_id, '>') as user_id,
-                FLOOR(SUM(fst.duration_minutes)/60) AS hours,
-                SUM(fst.duration_minutes)%60 AS minutes,
-                fst.focus_datetime
+                (SUM(fdt.duration_minutes)/60) AS hours,
+                SUM(fdt.duration_minutes)%60 AS minutes,
+                fdt.focus_datetime
             FROM 
-                focus_sessions AS fst
+                focus_sessions AS fdt
             WHERE
                 user_id = (?)
             GROUP BY
-                DATE(fst.focus_datetime)) AS fs
-            ON
+                DATE(fdt.focus_datetime)) AS fs
+        ON
             DATE(fs.focus_datetime) = dt.dates
-            ORDER BY
-                dt.dates;
+        ORDER BY
+            dt.dates;
+
         """, (user_id,))
 
         connection.commit()
@@ -120,7 +125,7 @@ def create_plot(user_id, cursor, connection):
         content = cursor.fetchall()
 
         x_values = [data_point[0] for data_point in content]
-        y_values = [data_point[1] for data_point in content]
+        y_values = [float(data_point[1]) for data_point in content]
 
         return [x_values, y_values]
 
