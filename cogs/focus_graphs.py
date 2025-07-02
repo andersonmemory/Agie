@@ -89,7 +89,7 @@ def create_plot(user_id, cursor, connection):
         cursor.execute(
         """
         SELECT CONCAT(LPAD(DAY(dt.dates), 2, '0'), '/', LPAD(MONTH(dt.dates), 2, '0')) AS dates,
-            COALESCE(fs.minutes/60, 0) AS minutes
+            ROUND(COALESCE(CAST(fs.minutes AS DECIMAL(10, 2))/60.0, 0), 1) AS minutes
                 FROM (WITH RECURSIVE number AS (
                 SELECT 1 AS num
                 UNION ALL
