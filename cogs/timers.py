@@ -54,8 +54,11 @@ class Timers(commands.Cog):
         # channel that is going to use the focus timers feature
         channel = self.bot.get_channel(1383518749444931661)
 
-        pomodoro_channel = self.bot.get_channel(1384219039626166425)
-        stopwatch_channel = self.bot.get_channel(1384219100812939324)
+        # Pomodoro main server: 1384210167872360529 / Developing server: 1384219039626166425
+        # Stopwatch main server: 1384210711143514152 / Developing server: 1384219100812939324
+
+        pomodoro_channel = self.bot.get_channel(1384210167872360529)
+        stopwatch_channel = self.bot.get_channel(1384210711143514152)
 
         if before.channel == None:
 
