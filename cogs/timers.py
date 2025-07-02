@@ -52,13 +52,21 @@ class Timers(commands.Cog):
         bot_cursor = self.cursor
 
         # channel that is going to use the focus timers feature
-        channel = self.bot.get_channel(1383518749444931661)
+        # Channel main server: 1388256725278396466 / Developing server: 1383518749444931661
+
+        channel = self.bot.get_channel(1388256725278396466)
 
         # Pomodoro main server: 1384210167872360529 / Developing server: 1384219039626166425
         # Stopwatch main server: 1384210711143514152 / Developing server: 1384219100812939324
 
         pomodoro_channel = self.bot.get_channel(1384210167872360529)
         stopwatch_channel = self.bot.get_channel(1384210711143514152)
+
+
+        current_joined_channel = None
+
+        print(f"Before: {before}")
+        print(f"After: {after}")
 
         if before.channel == None:
 
@@ -119,6 +127,7 @@ class Timers(commands.Cog):
             if not study_counter_task.is_running():
                 study_counter_task.start(channel)
 
+        # Left the channel
         elif after.channel == None:
 
             member_left = 0
