@@ -1,8 +1,11 @@
 import discord
 from discord.ext import commands
 import matplotlib.pyplot as plt
+from PIL import Image
 import re
 import os
+
+from matplotlib.offsetbox import (OffsetImage, AnnotationBbox)
 
 async def verify_additional_user_plot(ctx, bot, user : str):
     if user:
@@ -33,6 +36,8 @@ class FocusGraphs(commands.Cog):
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
 
+        fig, ax = plt.subplots()
+
         first_plot = create_plot(int(ctx.author.id), self.cursor, self.connection)
 
         second_plot = None
@@ -46,7 +51,6 @@ class FocusGraphs(commands.Cog):
 
         create_plot(ctx.author.id, self.cursor, self.connection)
 
-        fig, ax = plt.subplots()
 
         if first_plot:
             ax.plot(first_plot[0], first_plot[1], label=f"{ctx.author.global_name}")
@@ -69,24 +73,43 @@ class FocusGraphs(commands.Cog):
             except:
                 print("Error")
 
-        ax.set_xlabel('Dias')
-        ax.set_ylabel('Horas')
-
+        ax.set_xlabel('Dias', color="white")
+        ax.set_ylabel('Horas', color="white")
+        ax.tick_params(labelsize=12, colors="white")
 
         if not (second_plot or third_plot):
             ax.set_title(f"Tempo de foco de {ctx.author.global_name}.")
         else:
-
-            ax.set_title(f"Tempo de foco de {ctx.author.global_name}{',' if third_plot else ' e '}{f"{second_plot[1].global_name}" if second_plot else '' }{' e ' if third_plot else ''}{third_plot[1].global_name if third_plot else ''}.")
+            ax.set_title(f"Tempo de foco de {ctx.author.global_name}{', ' if third_plot else ' e '}{f"{second_plot[1].global_name}" if second_plot else '' }{' e ' if third_plot else ''}{third_plot[1].global_name if third_plot else ''}.")
         
+        ax.title.set_color("white")
+
+        fig.set_facecolor("#71268f")
         ax.legend()
         ax.grid()
+        ax.set_facecolor("#71268f")
 
-        plt.savefig("graph.jpeg")
+        plt.savefig("graph.png", transparent=True)
 
-        await ctx.respond(file=discord.File('graph.jpeg'))
+        img1 = Image.open("bg_graph.png")
+        img2 = Image.open("graph.png")
 
-        os.remove("graph.jpeg")
+        final = Image.alpha_composite(img1, img2)
+
+        final.save("result.png")
+
+        file = discord.File("result.png", filename="result.png")
+
+        embed = discord.Embed(
+        color=discord.Colour.purple(),
+        )
+
+        embed.set_image(url="attachment://result.png")
+
+        await ctx.respond(embed=embed, file=file)
+
+        os.remove("result.png")
+        os.remove("graph.png")
 
 def create_plot(user_id, cursor, connection):
 
