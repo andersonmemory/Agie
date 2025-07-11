@@ -28,7 +28,7 @@ class FocusRankings(discord.ui.View): # Create a class called MyView that subcla
             """
             , "Top de foco 📊")
         
-        await interaction.response.send_message(content="", embed=embed, ephemeral=False, delete_after=7)
+        await interaction.response.send_message(content="", embed=embed, ephemeral=False)
 
     @discord.ui.button(label="Mês", style=discord.ButtonStyle.primary, emoji="👥") 
     async def second_button(self, button, interaction):
@@ -81,7 +81,7 @@ class FocusRankings(discord.ui.View): # Create a class called MyView that subcla
             """
         , "Top semana de foco 📊")
 
-        await interaction.response.send_message(content="", embed=embed,ephemeral=False, delete_after=7)
+        await interaction.response.send_message(content="", embed=embed,ephemeral=False)
 
     @discord.ui.button(label="Dia", style=discord.ButtonStyle.primary, emoji="📅")
     async def fourth_button(self, button, interaction):
@@ -108,7 +108,7 @@ class FocusRankings(discord.ui.View): # Create a class called MyView that subcla
             """
         , "Top diário de foco 📊")
 
-        await interaction.response.send_message(content="", embed=embed,ephemeral=False, delete_after=7)
+        await interaction.response.send_message(content="", embed=embed,ephemeral=False)
 
 def stabilish_connection():    
     try:
