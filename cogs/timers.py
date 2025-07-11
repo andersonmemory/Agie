@@ -73,9 +73,11 @@ class Timers(commands.Cog):
 
         on_pomodoro_channel = after.channel == pomodoro_channel
 
+        # Leaving the VC
         if before.channel in time_voice_channels:
             await remove(bot_cursor, bot_connection, member, channel)
 
+        # Joining the VC
         if after.channel in time_voice_channels:
             register(bot_cursor, bot_connection, member, on_pomodoro_channel, channel)
 
