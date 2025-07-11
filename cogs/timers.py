@@ -320,7 +320,12 @@ async def remove(cursor, connection, member, channel):
 
                         if total_hours != 0:
 
-                            embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes%60 > 1 else '**minuto**'}.")
+                            if total_minutes % 60 == 0:
+                                embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'}.")
+                            
+                            else:
+
+                                embed.add_field(name=" ", value=f"O pomodoro parou de contar! \n <@{member_left["id"]}> se concentrou por {total_hours%60} {'**horas**' if total_hours > 1 else '**hora**'} e {total_minutes%60} {'**minutos**' if total_minutes%60 > 1 else '**minuto**'}.")
 
                         else:
 
