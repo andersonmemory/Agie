@@ -75,7 +75,8 @@ class FocusGraphs(commands.Cog):
 
         ax.set_xlabel('Dias', color="white")
         ax.set_ylabel('Horas', color="white")
-        ax.tick_params(labelsize=12, colors="white")
+        ax.tick_params(labelsize=10, colors="white", labelrotation=30)
+
 
         if not (second_plot or third_plot):
             ax.set_title(f"Tempo de foco de {ctx.author.global_name}.")
