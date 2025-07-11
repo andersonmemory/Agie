@@ -48,8 +48,11 @@ class Timers(commands.Cog):
             return
         
         # If what changed was just the voice status inside the channel
-        if before.self_deaf != after.self_deaf or before.self_mute != after.self_mute:
-            return
+        try: 
+            if before.self_deaf != after.self_deaf or before.self_mute != after.self_mute:
+                return
+        except:
+            pass
 
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
@@ -263,7 +266,10 @@ def register(cursor, connection, member, on_pomodoro_channel, channel):
             "pomodoro_color": member_info[4],
             "break_color": member_info[5],
             "stopwatch_color": member_info[6],
-            "pomodoro_image": member_info[7]
+            "pomodoro_image": member_info[7],
+
+            "last_focus_session": ,
+            ""
             })
 
         connection.commit()
@@ -317,6 +323,8 @@ async def remove(cursor, connection, member, channel):
 
                 else:
                     
+                    streak_system_logic()
+
                     date = str(datetime.datetime.today()).split('.')[0]
                     user_id = member_left["id"]
                     embed.set_thumbnail(url=member_left["avatar"])
