@@ -167,7 +167,7 @@ async def study_counter_task(channel):
                             color=colors[member["break_color"]],
                         )
 
-                        epoch = time.time()
+                        epoch = time.time() + member["short_break"]
 
                         embed.set_author(name="Mente Ágil", icon_url="https://cdn.discordapp.com/attachments/1219843085341560872/1362999843211186248/Logo_.png?ex=685978c5&is=68582745&hm=59fc7659e42d531a4f663d20ca6e9c0324b2dd7f3ec2d4e9a4d1a5dbd974cf1e&")
                         embed.add_field(name=" ", value=f"> <@{member["id"]}>. Pausa! Ufa... {random.choice(emojis)} \n 🍅 ({int(member["pomodoro"]/60)}/{int(member["short_break"]/60)}). Próximo round: {member["current_round"] + 1} \n <t:{int(epoch)}:R>")
