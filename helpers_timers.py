@@ -115,11 +115,11 @@ class AppearancePomo(discord.ui.View):
     @discord.ui.button(label="Cor em pomodoro", style=discord.ButtonStyle.primary, emoji="🍅")
     async def pomodoro(self, button, interaction):
 
-        await interaction.response.send_message(f"", view=AppearancePomoPomodoro(), ephemeral=True, delete_after=12)
+        await interaction.response.send_message(f"", view=AppearancePomoPomodoro(), ephemeral=True)
 
     @discord.ui.button(label="Cor em pausa", style=discord.ButtonStyle.primary, emoji="⏸️")
     async def pomodoro_break(self, button, interaction):
-        await interaction.response.send_message(f"", view=AppearancePomoBreak(), ephemeral=True, delete_after=12)
+        await interaction.response.send_message(f"", view=AppearancePomoBreak(), ephemeral=True)
 
     @discord.ui.button(label="Imagem em pausa", style=discord.ButtonStyle.primary, emoji="🖼️")
     async def pomodoro_break_image(self, button, interaction):
