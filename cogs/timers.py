@@ -218,55 +218,58 @@ def setup(bot):
     bot.add_cog(Timers(bot))
 
 def register(cursor, connection, member, on_pomodoro_channel, channel):
-    cursor.execute(
-    """
-        SELECT 
-            pp.pomodoro,
-            pp.short_break, 
-            pp.long_break, 
-            pp.long_break_interval,
-            tvp.pomodoro_color,
-            tvp.break_color,
-            tvp.stopwatch_color,
-            tvp.pomodoro_image
-        FROM 
-            pomodoro_preferences AS pp
-        INNER JOIN 
-            timer_visual_preferences AS tvp ON tvp.user_id = pp.user_id
-        WHERE 
-            tvp.user_id = (?)
-    """, (member.id,))
+    try: 
+        cursor.execute(
+        """
+            SELECT 
+                pp.pomodoro,
+                pp.short_break, 
+                pp.long_break, 
+                pp.long_break_interval,
+                tvp.pomodoro_color,
+                tvp.break_color,
+                tvp.stopwatch_color,
+                tvp.pomodoro_image
+            FROM 
+                pomodoro_preferences AS pp
+            INNER JOIN 
+                timer_visual_preferences AS tvp ON tvp.user_id = pp.user_id
+            WHERE 
+                tvp.user_id = (?)
+        """, (member.id,))
 
-    member_info = cursor.fetchall()[0]
+        member_info = cursor.fetchall()[0]
 
-    voice_channel_members.append({
-        "message": None,
-        "seconds": 0,
-        "seconds_paused": 0,
-        "is_deaf": 1 if member.voice.self_deaf else 0,
-        "global_name": member.global_name,
-        "avatar": member.avatar,
-        "id": member.id,
+        voice_channel_members.append({
+            "message": None,
+            "seconds": 0,
+            "seconds_paused": 0,
+            "is_deaf": 1 if member.voice.self_deaf else 0,
+            "global_name": member.global_name,
+            "avatar": member.avatar,
+            "id": member.id,
 
-        "pomodoro": member_info[0] * 60, #1500
-        "short_break": member_info[1] * 60,
-        "long_break": member_info[2] * 60, #900
-        "long_break_interval": member_info[3], #4
-        "current_round": 0,
-        "pomodoro_enabled": 1 if on_pomodoro_channel else 0,
-        
-        "on_break": 0, # 0,
+            "pomodoro": member_info[0] * 60, #1500
+            "short_break": member_info[1] * 60,
+            "long_break": member_info[2] * 60, #900
+            "long_break_interval": member_info[3], #4
+            "current_round": 0,
+            "pomodoro_enabled": 1 if on_pomodoro_channel else 0,
+            
+            "on_break": 0, # 0,
 
-        "pomodoro_color": member_info[4],
-        "break_color": member_info[5],
-        "stopwatch_color": member_info[6],
-        "pomodoro_image": member_info[7]
-        })
+            "pomodoro_color": member_info[4],
+            "break_color": member_info[5],
+            "stopwatch_color": member_info[6],
+            "pomodoro_image": member_info[7]
+            })
 
-    connection.commit()
+        connection.commit()
 
-    if not study_counter_task.is_running():
-        study_counter_task.start(channel)
+        if not study_counter_task.is_running():
+            study_counter_task.start(channel)
+    except Exception as e:
+        print(f"Couldn't connect to MariaDB server {e}")
 
 async def remove(cursor, connection, member, channel):
 
