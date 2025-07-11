@@ -234,13 +234,19 @@ def register(cursor, connection, member, on_pomodoro_channel, channel):
                 tvp.pomodoro_color,
                 tvp.break_color,
                 tvp.stopwatch_color,
-                tvp.pomodoro_image
+                tvp.pomodoro_image,
+                du.last_focus_date,
+                du.current_focus_streak,
+                du.max_focus_streak
             FROM 
                 pomodoro_preferences AS pp
             INNER JOIN 
                 timer_visual_preferences AS tvp ON tvp.user_id = pp.user_id
+            INNER JOIN
+                discord_users AS du ON du.id = pp.user_id
             WHERE 
                 tvp.user_id = (?)
+
         """, (member.id,))
 
         member_info = cursor.fetchall()[0]
