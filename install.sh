@@ -1,8 +1,6 @@
 #!/bin/bash
 
-echo "TOKEN = 'TOKEN'
-
-# The Discord bot token
+echo "# The Discord bot token
 BOT_TOKEN = ''
 
 # Login to MariaDB
