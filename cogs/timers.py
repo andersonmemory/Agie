@@ -8,6 +8,8 @@ import random
 
 import helpers_rankings, helpers_timers
 
+is_developing_channels = 1
+
 voice_channel_members = []
 
 emojis = [
@@ -44,6 +46,10 @@ class Timers(commands.Cog):
 
         if member.bot:
             return
+        
+        # If what changed was just the voice status inside the channel
+        if before.self_deaf != after.self_deaf or before.self_mute != after.self_mute:
+            return
 
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
@@ -51,14 +57,17 @@ class Timers(commands.Cog):
         bot_connection = self.connection
         bot_cursor = self.cursor
 
-        # Channel that is going to use the focus timers feature # Channel main server: 1388256725278396466 / Developing server: 1383518749444931661
+        # Channel that is going to use the focus timers feature # Channel main server: 1388256725278396466 / Developing server: 13835187494449316
+        if is_developing_channels:
+            channel = self.bot.get_channel(1383518749444931661)
 
-        channel = self.bot.get_channel(1388256725278396466)
-
-        # Pomodoro main server: 1384210167872360529 / Developing server: 1384219039626166425 # Stopwatch main server: 1384210711143514152 / Developing server: 1384219100812939324
-
-        pomodoro_channel = self.bot.get_channel(1384210167872360529)
-        stopwatch_channel = self.bot.get_channel(1384210711143514152)
+            # Pomodoro main server: 1384210167872360529 / Developing server: 1384219039626166425 # Stopwatch main server: 1384210711143514152 / Developing server: 1384219100812939324
+            pomodoro_channel = self.bot.get_channel(1384219039626166425)
+            stopwatch_channel = self.bot.get_channel(1384219100812939324)
+        else:
+            channel = self.bot.get_channel(1388256725278396466)
+            pomodoro_channel = self.bot.get_channel(1384210167872360529)
+            stopwatch_channel = self.bot.get_channel(1384210711143514152)
 
         time_voice_channels = [pomodoro_channel, stopwatch_channel]
 
