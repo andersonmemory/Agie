@@ -268,7 +268,9 @@ def register(cursor, connection, member, on_pomodoro_channel, channel):
             "stopwatch_color": member_info[6],
             "pomodoro_image": member_info[7],
 
-            "last_focus_session": ,
+            "last_focus_session": member_info[8],
+            "current_focus_streak": member_info[9],
+            "max_focus_streak": member_info[10]
             ""
             })
 
