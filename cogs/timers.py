@@ -130,7 +130,7 @@ class Timers(commands.Cog):
             SELECT 
                 du.last_focus_date,
                 du.current_focus_streak,
-                du.max_focus_streak,
+                du.max_focus_streak
             FROM 
                 discord_users AS du
             WHERE
