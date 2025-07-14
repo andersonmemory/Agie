@@ -82,29 +82,36 @@ async def get_members(ctx):
 
 @bot.event
 async def on_member_join(member):
+    try: 
+        # Add to discord_users
+        bot.cursor.execute("INSERT IGNORE INTO discord_users (id, global_name) VALUES (?, ?)", (member.id, member.global_name))
 
-    # Add to discord_users
-    bot.cursor.execute("INSERT IGNORE INTO discord_users (id, global_name) VALUES (?, ?)", (member.id, member.global_name))
+        # Add a 1:1 row for user_configs
+        bot.cursor.execute("INSERT IGNORE INTO user_configs (user_id) VALUES (?)", (member.id,))
 
-    # Add a 1:1 row for user_configs
-    bot.cursor.execute("INSERT IGNORE INTO user_configs (user_id) VALUES (?)", (member.id,))
+        # Add a 1:1 row for pomodoro_preferences
+        bot.cursor.execute("INSERT IGNORE INTO pomodoro_preferences (user_id) VALUES (?)", (member.id,))
 
-    # Add a 1:1 row for pomodoro_preferences
-    bot.cursor.execute("INSERT IGNORE INTO pomodoro_preferences (user_id) VALUES (?)", (member.id,))
+        # Add a 1:1 row for timer_visual_preferences
+        bot.cursor.execute("INSERT IGNORE INTO timer_visual_preferences (user_id) VALUES(?)", (member.id,))
 
-    # Add a 1:1 row for timer_visual_preferences
-    bot.cursor.execute("INSERT IGNORE INTO timer_visual_preferences (user_id) VALUES(?)", (member.id,))
-
-    bot.connection.commit()
+        bot.connection.commit()
+    except mariadb.Error as e:
+        print(f"MariaDB server error: {e}")
 
 @bot.event
 async def on_member_remove(member):
 
-    bot.cursor.execute("DELETE FROM discord_users WHERE discord_users.id = (?)", (member.id,))
-    bot.connection.commit()
+    try:
 
-bot.load_extension('cogs.messages')
-bot.load_extension('cogs.moderation')
+        bot.cursor.execute("DELETE FROM discord_users WHERE discord_users.id = (?)", (member.id,))
+        bot.connection.commit()
+
+    except mariadb.Error as e:
+        print(f"MariaDB server error: {e}")
+
+# bot.load_extension('cogs.messages')
+# bot.load_extension('cogs.moderation')
 bot.load_extension('cogs.timers')
 bot.load_extension('cogs.focus_graphs')
-bot.run(os.getenv("BOT_TOKEN"))
+bot.run(os.getenv("BOT_DEVELOPING_YAY"))
