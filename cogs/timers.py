@@ -234,7 +234,7 @@ class Timers(commands.Cog):
         # total_data variables
         total_hours, total_minutes = (total_data[0], total_data[1])
 
-        embed.title = f"👤 Foco de {ctx.author.global_name} ({total_hours}**h**{total_minutes})"
+        embed.title = f"🔥 Foco de {ctx.author.global_name} ({total_hours}**h**{total_minutes})"
 
         # month_data variables
         month_hours, month_minutes = (month_data[0], month_data[1])
