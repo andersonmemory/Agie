@@ -251,7 +251,6 @@ class Timers(commands.Cog):
 
         embed.add_field(name=" ", value=f"{month}\n{week}\n{today}", inline=False)
 
-
         await ctx.respond(embed=embed)
 
 @tasks.loop(seconds=1)
@@ -466,10 +465,10 @@ async def remove(cursor, connection, member, channel):
 
                 else:
                     
-                    streak_system_logic(cursor, connection)
 
                     date = str(datetime.datetime.today()).split('.')[0]
                     user_id = member_left["id"]
+                    streak_system_logic(cursor, connection, user_id)
                     embed.set_thumbnail(url=member_left["avatar"])
                     embed.set_author(name="Mente Ágil", icon_url="https://cdn.discordapp.com/attachments/1219843085341560872/1362999843211186248/Logo_.png?ex=685978c5&is=68582745&hm=59fc7659e42d531a4f663d20ca6e9c0324b2dd7f3ec2d4e9a4d1a5dbd974cf1e&")
 
@@ -525,7 +524,7 @@ async def remove(cursor, connection, member, channel):
             except:
                 pass
 
-def streak_system_logic(cursor, connection): # TODO: add variable: starting_fucus_session_date
+def streak_system_logic(cursor, connection, user_id): # TODO: add variable: starting_fucus_session_date
 
     dates_info = cursor.execute("""
         SELECT COALESCE(du.last_focus_date, 0) AS last_focus_date,
@@ -535,8 +534,8 @@ def streak_system_logic(cursor, connection): # TODO: add variable: starting_fucu
                du.max_focus_streak AS max_streak
         FROM 
             discord_users AS du
-        WHERE du.id = 1214637306397462540;
-        """)
+        WHERE du.id = (?));
+        """, (user_id,))
     
     connection.commit()
 
