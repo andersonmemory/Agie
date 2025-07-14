@@ -118,6 +118,151 @@ class Timers(commands.Cog):
 
         await ctx.respond(embed=embed, view=helpers_rankings.FocusRankings(), delete_after=20)
 
+    @discord.slash_command(description="Mostra seu status de foco incluindo seus streaks")
+    async def foco(self, ctx):
+
+        user_id = ctx.author.id
+
+        # TODO: handle cases where user had never used the study system before
+
+        # Query about user streaks
+        self.bot.cursor.execute("""
+            SELECT 
+                du.last_focus_date,
+                du.current_focus_streak,
+                du.max_focus_streak,
+            FROM 
+                discord_users AS du
+            WHERE
+                du.id = (?)
+        """, (user_id,))
+
+        self.connection.commit()
+        streak_data = self.cursor.fetchall()[0]
+
+        # Query on amount of study in total
+        self.bot.cursor.execute("""
+            SELECT 
+                FLOOR(SUM(duration_minutes)/60) as hours, 
+                SUM(duration_minutes)%60 as minutes 
+            FROM 
+                focus_sessions 
+            INNER JOIN 
+                discord_users ON user_id = discord_users.id 
+            GROUP BY 
+                (user_id)
+            ORDER BY
+                SUM(duration_minutes) DESC
+        """, (user_id,))
+
+        self.connection.commit()
+        total_data = self.cursor.fetchall()[0]
+
+        # Query on amount of study in this month
+        self.bot.cursor.execute("""
+            SELECT 
+                FLOOR(SUM(duration_minutes)/60) as hours,
+                SUM(duration_minutes)%60 as minutes
+            FROM 
+                focus_sessions 
+            INNER JOIN 
+                discord_users on user_id = discord_users.id 
+            WHERE 
+                MONTH(focus_datetime) = MONTH(NOW()) AND 
+                YEAR(focus_datetime) = YEAR(NOW()) AND
+                discord_users.id = (?)
+            """, (user_id,))
+        
+        self.connection.commit()
+        month_data = self.cursor.fetchall()[0]
+
+        # Query on amount of study in this week
+        self.bot.cursor.execute("""
+            SELECT
+                FLOOR(SUM(duration_minutes)/60) as hours,
+                SUM(duration_minutes)%60 as minutes
+            FROM
+                focus_sessions
+            INNER JOIN
+                discord_users ON user_id = discord_users.id
+            WHERE
+                focus_datetime >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            """, (user_id,))
+
+        self.connection.commit()
+        week_data = self.cursor.fetchall()[0]
+
+        # Query on amount of study in today
+        self.bot.cursor.execute("""
+            SELECT 
+                FLOOR(SUM(duration_minutes)/60) as hours,
+                SUM(duration_minutes)%60 as minutes
+            FROM 
+                focus_sessions 
+            INNER JOIN 
+                discord_users ON user_id = discord_users.id 
+            WHERE 
+                MONTH(focus_datetime) = MONTH(NOW()) AND 
+                DAY(focus_datetime) = DAY(NOW()) AND
+                discord_users.id = (?)
+            """, (user_id,))
+        
+        self.connection.commit()
+        today_data = self.cursor.fetchall()[0]
+
+        embed = discord.Embed(
+            title=f"Perfil de {user_id.global_name}", 
+            color=discord.Colour.purple(),
+        )
+
+        embed.set_thumbnail(url=f"{ctx.author.avatar}")
+
+        # streak_data variables
+        last_focus_date, current_focus_streak, max_focus_streak = (0, 0, 0)
+
+        if len(streak_data) != 0:
+            last_focus_date, current_focus_streak, max_focus_streak = (streak_data[0], streak_data[1], streak_data[2])
+
+        embed.add_field(name=" ", value=f"**Último vez que focou**: {last_focus_date}", inline=False)
+        embed.add_field(name=" ", value=f"**Atual streak de foco**: {last_focus_date}", inline=False)
+        embed.add_field(name=" ", value=f"**Máximo de foco de streak**: {last_focus_date}", inline=False)
+
+        # total_data variables
+        total_hours, total_minutes = (0, 0)
+
+        if len(total_data) != 0:
+            total_hours = total_data[0]
+            total_minutes = total_data[1]
+
+        embed.add_field(name=" ", value=f"**Foco total:** {total_hours}, {total_minutes}", inline=True)
+
+        # month_data variables
+        if len(month_data) != 0:
+            month_hours = month_data[0]
+            month_minutes = month_data[1]
+
+        month_hours, month_minutes = (0, 0)
+
+        embed.add_field(name=" ", value=f"**Foco mensal:** {month_hours} {month_minutes if month_minutes > 0 else '.'}", inline=True)
+
+        # week_data variables
+        week_hours, week_minutes = (0, 0)
+
+        if len(week_data) != 0:
+            week_hours = week_data[0]
+            week_minutes = week_data[1]
+
+        embed.add_field(name=" ", value=f"**Foco semanal:** {week_hours}, {week_minutes if week_minutes > 0 else '.'}", inline=True)
+
+        # today_data variables
+        today_hours, today_minutes = (0, 0)
+
+        if len(today_data) != 0:
+            today_hours = today_data[0]
+            today_minutes = today_data[1]
+
+        embed.add_field(name=" ", value=f"**Foco de hoje:** {today_hours}{today_minutes if today_data > 0 else '.'}", inline=True)
+
 @tasks.loop(seconds=1)
 async def study_counter_task(channel):
 
