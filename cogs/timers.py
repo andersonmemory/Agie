@@ -330,7 +330,7 @@ async def remove(cursor, connection, member, channel):
 
                 else:
                     
-                    streak_system_logic()
+                    streak_system_logic(cursor, connection)
 
                     date = str(datetime.datetime.today()).split('.')[0]
                     user_id = member_left["id"]
@@ -388,3 +388,48 @@ async def remove(cursor, connection, member, channel):
                         await channel.send(embed=embed)
             except:
                 pass
+
+def streak_system_logic(cursor, connection): # TODO: add variable: starting_fucus_session_date
+
+    dates_info = cursor.execute("""
+        SELECT COALESCE(du.last_focus_date, 0) AS last_focus_date,
+               CURDATE() AS today,
+               DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS yesterday,
+               du.current_focus_streak AS current_streak,
+               du.max_focus_streak AS max_streak
+        FROM 
+            discord_users AS du
+        WHERE du.id = 1214637306397462540;
+        """)
+    
+    connection.commit()
+
+    dates_info = cursor.fetchall()[0]
+
+    last_date = dates_info[0]
+    today = dates_info[1]
+    yesterday = dates_info[2]
+    current_streak = dates_info[3]
+    max_streak = dates_info[4]
+
+    if last_date != today and last_date is not yesterday:
+        current_streak = 0
+        last_date = today
+    
+    elif last_date != today and last_date is yesterday:
+        last_date = today
+        current_streak += 1
+        if current_streak > max_streak:
+            max_streak = current_streak
+    
+    elif last_date == today:
+        return
+    
+    cursor.execute("""
+        UPDATE discord_users SET du
+        SET du.last_focus_date = (?)
+        SET du.current_focus_streak = (?)
+        SET du.max_focus_streak = (?)
+    """, (last_date, current_streak, max_streak))
+
+    connection.commit()
