@@ -500,7 +500,7 @@ def register(cursor, connection, member, on_pomodoro_channel, channel, afk_chann
         if not study_counter_task.is_running():
             study_counter_task.start(channel, afk_channel)
     except Exception as e:
-        print(f"Couldn't connect to MariaDB server {e}")
+        print(f"{e}")
 
 async def remove(cursor, connection, member, channel):
 
