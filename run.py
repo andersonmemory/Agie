@@ -16,6 +16,10 @@ intents.message_content = True
 intents.emojis = True
 intents.voice_states = True
 
+intents.reactions = True
+intents.dm_messages = True
+
+
 class Agie(discord.Bot): # subclass discord.Bot
     async def on_ready(self): # override the on_ready event
         print('Logged in as ', end="")
@@ -113,4 +117,4 @@ bot.load_extension('cogs.messages')
 bot.load_extension('cogs.moderation')
 bot.load_extension('cogs.timers')
 bot.load_extension('cogs.focus_graphs')
-bot.run(os.getenv("BOT_TOKEN_COOL"))
+bot.run(os.getenv("BOT_TOKEN"))
