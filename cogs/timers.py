@@ -252,7 +252,15 @@ class Timers(commands.Cog):
             if streak_data_vars[idx] == None:
                 streak_data_vars[idx] = "sem dados"
 
-        embed.add_field(name=" ", value=f"**Última sessão:** {streak_data_vars[0]}", inline=False)
+        time_formatted = ''
+        data_formatted = ''
+
+        if streak_data_vars[0] != "sem dados":
+            data_formatted = streak_data_vars[0].split(' ')[0]
+            time_formatted = streak_data_vars[1].split(' ')[0]
+            embed.add_field(name=" ", value=f"**Última sessão:** {data_formatted} às {time_formatted}", inline=False)
+        else:
+            embed.add_field(name=" ", value=f"**Última sessão:** {streak_data_vars[0]}", inline=False)
         embed.add_field(name=" ", value=f"**Atual streak:** {streak_data_vars[1]}", inline=True)
         embed.add_field(name=" ", value=f"**Maior streak:** {streak_data_vars[2]}", inline=True)
 
