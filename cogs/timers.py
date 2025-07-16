@@ -6,9 +6,15 @@ import time
 import datetime
 import random
 
+import asyncio
+
 import helpers_rankings, helpers_timers
 
-is_developing_channels = 1
+
+LIMIT = (2 * 60) * 60 + (30 * 60) # 2h30 in seconds
+WAIT = (20 * 60) # 20 minutes in seconds
+
+is_developing_channels = 0
 
 voice_channel_members = []
 
@@ -71,6 +77,7 @@ class Timers(commands.Cog):
             channel = self.bot.get_channel(1388256725278396466)
             pomodoro_channel = self.bot.get_channel(1384210167872360529)
             stopwatch_channel = self.bot.get_channel(1384210711143514152)
+            afk_channel = self.bot.get_channel(1394992766089564190)
 
         time_voice_channels = [pomodoro_channel, stopwatch_channel]
 
@@ -82,7 +89,7 @@ class Timers(commands.Cog):
 
         # Joining the VC
         if after.channel in time_voice_channels:
-            register(bot_cursor, bot_connection, member, on_pomodoro_channel, channel)
+            register(bot_cursor, bot_connection, member, on_pomodoro_channel, channel, afk_channel, self.bot)
 
 
     @discord.slash_command(description="altera configurações do pomodoro")
@@ -254,7 +261,7 @@ class Timers(commands.Cog):
         await ctx.respond(embed=embed)
 
 @tasks.loop(seconds=1)
-async def study_counter_task(channel):
+async def study_counter_task(channel, afk_channel):
 
     global voice_channel_members
     global emojis
@@ -296,6 +303,75 @@ async def study_counter_task(channel):
                 await channel.send(content=f"<@{member["id"]}>", delete_after=1)
                 member["message"] = await channel.send(embed=embed)
         else:
+
+            # verification in voice channel (either for pomodoro or stopwatch)
+
+            member["limit_counter"] += 1
+
+            if member["limit_counter"] > LIMIT:
+
+                if not member["on_verify_message_sent"]:
+                    # send to dm
+        
+                    dmchannel = await member["object"].create_dm()
+
+                    embed = discord.Embed(
+                        title="🔥 Contagem de foco",
+                        description="Confirme sua presença na call dentro de 20 minutos.",
+                        color=discord.Colour.purple()
+                        )
+                    
+                    embed.add_field(name=" ", value="|| Você recebeu isso para evitar contar seu foco sem estar focado(a)! ||")
+
+                    success = discord.Embed(
+                        title="✅ Sucesso!",
+                        description="Obrigado por confirmar sua presença.",
+                        color=discord.Colour.green()
+                        )
+
+                    failure = discord.Embed(
+                        title="❌ Tempo esgotado.",
+                        description="Seus 20 minutos já se passaram.",
+                        color=discord.Colour.red()
+                        )
+                    
+                    failure.add_field(name=" ", value=" Será movido(a) para a call de inativo.")
+                    
+                    message = await dmchannel.send(embed=embed)
+
+                    await message.add_reaction(emoji="✅")
+
+                    def check_reaction( r : discord.Reaction, u: discord.Member):
+
+                        if u.bot:
+                            return False
+                        
+                        if r.message != message:
+                            return False
+
+                        print(r.emoji)
+
+                        if r.emoji == "✅":
+
+                            return True
+                        else:
+                            return False
+                    
+                    reaction, user = ('','')
+
+                    async def waiting_for_response():
+                        try: 
+                            reaction, user = await member["bot_object"].wait_for(event="reaction_add", check=check_reaction, timeout=WAIT)
+                            await dmchannel.send(embed=success)
+                            print(f"{reaction} por {user}")
+                            member["limit_counter"] = 0
+                        except TimeoutError:
+                            # kick - move to the other VC channel
+                            await member["object"].move_to(afk_channel, reason="Não conseguiu verificar presença.")
+                            await dmchannel.send(embed=failure)
+
+                    waiting_task = asyncio.create_task(waiting_for_response())
+                    member["on_verify_message_sent"] = 1
 
             # pomodoro feature
             if member["pomodoro_enabled"]:
@@ -357,7 +433,7 @@ async def study_counter_task(channel):
 def setup(bot):
     bot.add_cog(Timers(bot))
 
-def register(cursor, connection, member, on_pomodoro_channel, channel):
+def register(cursor, connection, member, on_pomodoro_channel, channel, afk_channel, bot):
     try: 
         cursor.execute(
         """
@@ -390,10 +466,11 @@ def register(cursor, connection, member, on_pomodoro_channel, channel):
             "message": None,
             "seconds": 0,
             "seconds_paused": 0,
-            "is_deaf": 1 if member.voice.self_deaf else 0,
             "global_name": member.global_name,
             "avatar": member.avatar,
             "id": member.id,
+            "object": member,
+            "bot_object": bot,
 
             "pomodoro": member_info[0] * 60, #1500
             "short_break": member_info[1] * 60,
@@ -411,13 +488,16 @@ def register(cursor, connection, member, on_pomodoro_channel, channel):
 
             "last_focus_session": member_info[8],
             "current_focus_streak": member_info[9],
-            "max_focus_streak": member_info[10]
+            "max_focus_streak": member_info[10],
+
+            "limit_counter": 0,
+            "on_verify_message_sent": 0,
             })
 
         connection.commit()
 
         if not study_counter_task.is_running():
-            study_counter_task.start(channel)
+            study_counter_task.start(channel, afk_channel)
     except Exception as e:
         print(f"Couldn't connect to MariaDB server {e}")
 
