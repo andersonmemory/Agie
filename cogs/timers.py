@@ -307,7 +307,6 @@ async def study_counter_task(channel, afk_channel):
             # verification in voice channel (either for pomodoro or stopwatch)
 
             member["limit_counter"] += 1
-            print(f"seconds: {member["seconds"]}")
 
             if member["limit_counter"] > LIMIT:
 
@@ -349,8 +348,6 @@ async def study_counter_task(channel, afk_channel):
                         
                         if r.message != message:
                             return False
-
-                        print(r.emoji)
 
                         if r.emoji == "✅":
 
@@ -549,9 +546,7 @@ async def remove(cursor, connection, member, channel):
 
                     date = str(datetime.datetime.today()).split('.')[0]
                     user_id = member_left["id"]
-                    print("before streak")
                     streak_system_logic(cursor, connection, user_id)
-                    print("after streak")
                     embed.set_thumbnail(url=member_left["avatar"])
                     embed.set_author(name="Mente Ágil", icon_url="https://cdn.discordapp.com/attachments/1219843085341560872/1362999843211186248/Logo_.png?ex=685978c5&is=68582745&hm=59fc7659e42d531a4f663d20ca6e9c0324b2dd7f3ec2d4e9a4d1a5dbd974cf1e&")
 
@@ -602,15 +597,12 @@ async def remove(cursor, connection, member, channel):
                         
                         connection.commit()
 
-                        print("send")
                         await channel.send(content=f"<@{member_left["id"]}>", delete_after=1)
                         await channel.send(embed=embed)
             except:
                 pass
 
 def streak_system_logic(cursor, connection, user_id): # TODO: add variable: starting_fucus_session_date
-
-    print("before the executions inside of streak")
 
     try: 
         
@@ -642,13 +634,9 @@ def streak_system_logic(cursor, connection, user_id): # TODO: add variable: star
                 discord_users AS du
             WHERE du.id = (?);
             """, (user_id,))
-        
-        print("aft cursor exec")
 
         dates_info = cursor.fetchall()[0]
         connection.commit()
-
-        print(dates_info)
 
         last_date = dates_info[0]
 
@@ -664,19 +652,14 @@ def streak_system_logic(cursor, connection, user_id): # TODO: add variable: star
         if last_date != today and last_date is not yesterday:
             current_streak = 0
             last_date = today
-            print("first if statement end")
         
         elif last_date != today and last_date is yesterday:
             last_date = today
             current_streak += 1
             if current_streak > max_streak:
                 max_streak = current_streak
-                print("second if statement end (but now inside the inside if)")
-            print("second if statement end")
         
         elif last_date == today:
-            print("Returning")
-            print("last elif statement")
             return
         
         cursor.execute("""
@@ -694,8 +677,7 @@ def streak_system_logic(cursor, connection, user_id): # TODO: add variable: star
         """, (last_date, current_streak, max_streak, user_id))
 
         connection.commit()
-        print("after update exec")
 
-        print("after the executions inside of streak")
     except:
-        print("Something didnt work")
+        print("Error, exception at line line 682")
+        pass
