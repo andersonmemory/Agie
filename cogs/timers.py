@@ -133,7 +133,25 @@ class Timers(commands.Cog):
 
         user_id = ctx.author.id
 
-        # TODO: handle cases where user had never used the study system before
+        # DONE: handle cases where user had never used the study system before
+
+        # Update inserting last session date if there was one
+        self.bot.cursor.execute(
+        """
+        UPDATE discord_users AS du
+            SET last_focus_date = (SELECT focus_datetime
+                                    FROM
+                                        focus_sessions AS fs
+                                    WHERE
+                                        fs.user_id = (?)
+                                    ORDER BY
+                                        fs.focus_datetime DESC
+                                    LIMIT 1)
+            WHERE
+                du.id = (?)
+        """, (user_id, user_id))
+
+        self.bot.connection.commit()
 
         # Query about user streaks
         self.bot.cursor.execute("""
