@@ -1,3 +1,5 @@
+"""Contains commands to create plots based on user data on the focus counting system"""
+
 import discord
 from discord.ext import commands
 import matplotlib.pyplot as plt
