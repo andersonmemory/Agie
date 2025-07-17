@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-import helpers, modals
+
+from utils import helpers, modals
 import datetime
 
 class Moderation(commands.Cog):
