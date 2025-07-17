@@ -1,4 +1,4 @@
-"""Main file for starting the Bot along with its class definition"""
+"""Main file for starting the Bot along with its class definition."""
 
 import discord
 import mariadb
