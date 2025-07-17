@@ -92,7 +92,7 @@ class FocusGraphs(commands.Cog):
 
         plt.savefig("graph.png", transparent=True)
 
-        img1 = Image.open("bg_graph.png")
+        img1 = Image.open("assets/bg_graph.png")
         img2 = Image.open("graph.png")
 
         final = Image.alpha_composite(img1, img2)
