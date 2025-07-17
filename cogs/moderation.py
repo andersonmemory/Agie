@@ -1,3 +1,5 @@
+"""Contains ban and warning functionalities for moderators who must insert a password in order to execute."""
+
 import discord
 from discord.ext import commands
 
