@@ -9,11 +9,15 @@ import random
 import asyncio
 
 from utils import helpers_rankings, helpers_timers
+from config.settings import (
+    SEND_VERIFY_MESSAGE_THRESHOLD,
+    WAIT_TO_VERIFY_THRESHOLD,
 
-LIMIT = (2 * 60) * 60 + (30 * 60) # 2h30 in seconds
-WAIT = (20 * 60) # 20 minutes in seconds
-
-is_developing_channels = 0
+    POMODORO_CHANNEL_ID,
+    STOPWATCH_CHANNEL_ID,
+    FOCUS_MESSAGES_CHANNEL_ID,
+    AFK_CHANNEL_ID
+)
 
 voice_channel_members = []
 
@@ -53,7 +57,7 @@ class Timers(commands.Cog):
             return
         
         # If what changed was just the voice status inside the channel
-        try: 
+        try:
             if before.self_deaf != after.self_deaf or before.self_mute != after.self_mute:
                 return
         except:
@@ -65,18 +69,10 @@ class Timers(commands.Cog):
         bot_connection = self.connection
         bot_cursor = self.cursor
 
-        # Channel that is going to use the focus timers feature # Channel main server: 1388256725278396466 / Developing server: 13835187494449316
-        if is_developing_channels:
-            channel = self.bot.get_channel(1383518749444931661)
-
-            # Pomodoro main server: 1384210167872360529 / Developing server: 1384219039626166425 # Stopwatch main server: 1384210711143514152 / Developing server: 1384219100812939324
-            pomodoro_channel = self.bot.get_channel(1384219039626166425)
-            stopwatch_channel = self.bot.get_channel(1384219100812939324)
-        else:
-            channel = self.bot.get_channel(1388256725278396466)
-            pomodoro_channel = self.bot.get_channel(1384210167872360529)
-            stopwatch_channel = self.bot.get_channel(1384210711143514152)
-            afk_channel = self.bot.get_channel(1394992766089564190)
+        focus_channel = self.bot.get_channel(FOCUS_MESSAGES_CHANNEL_ID)
+        pomodoro_channel = self.bot.get_channel(POMODORO_CHANNEL_ID)
+        stopwatch_channel = self.bot.get_channel(STOPWATCH_CHANNEL_ID)
+        afk_channel = self.bot.get_channel(AFK_CHANNEL_ID)
 
         time_voice_channels = [pomodoro_channel, stopwatch_channel]
 
@@ -84,11 +80,11 @@ class Timers(commands.Cog):
 
         # Leaving the VC
         if before.channel in time_voice_channels:
-            await remove(bot_cursor, bot_connection, member, channel)
+            await remove(bot_cursor, bot_connection, member, focus_channel)
 
         # Joining the VC
         if after.channel in time_voice_channels:
-            register(bot_cursor, bot_connection, member, on_pomodoro_channel, channel, afk_channel, self.bot)
+            register(bot_cursor, bot_connection, member, on_pomodoro_channel, focus_channel, afk_channel, self.bot)
 
 
     @discord.slash_command(description="altera configurações do pomodoro")
@@ -100,8 +96,8 @@ class Timers(commands.Cog):
                 await ctx.respond("Por favor, saia da call primeiro antes de fazer a configuração", ephemeral=True, delete_after=12)
                 return
 
-
         await ctx.respond(content="", view=helpers_timers.ConfigPomodoro(), ephemeral=True, delete_after=7)
+
 
     @discord.slash_command(description="Mostra o rank dos membros mais focados!")
     async def rank(self, ctx):
@@ -124,15 +120,13 @@ class Timers(commands.Cog):
 
         await ctx.respond(embed=embed, view=helpers_rankings.FocusRankings(), delete_after=20)
 
+
     @discord.slash_command(description="Mostra seu status de foco incluindo seus streaks")
     async def foco(self, ctx):
 
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
-
         user_id = ctx.author.id
-
-        # DONE: handle cases where user had never used the study system before
 
         # Update inserting last session date if there was one
         self.bot.cursor.execute(
@@ -285,8 +279,9 @@ class Timers(commands.Cog):
 
         await ctx.respond(embed=embed)
 
+
 @tasks.loop(seconds=1)
-async def study_counter_task(channel, afk_channel):
+async def study_counter_task(focus_channel, afk_channel):
 
     global voice_channel_members
     global emojis
@@ -313,8 +308,8 @@ async def study_counter_task(channel, afk_channel):
                 embed.add_field(name=" ", value=f"> <@{member["id"]}>. Focando! {random.choice(emojis)} \n <t:{int(epoch)}:R> \n 🍅 ({int(member["pomodoro"]/60)}/{int(member["short_break"]/60)}). Fez: {member["current_round"]}")
                 embed.set_thumbnail(url=member["avatar"])
 
-                await channel.send(content=f"<@{member["id"]}>", delete_after=1)
-                member["message"] = await channel.send(embed=embed)
+                await focus_channel.send(content=f"<@{member["id"]}>", delete_after=1)
+                member["message"] = await focus_channel.send(embed=embed)
             
             else:
 
@@ -324,14 +319,14 @@ async def study_counter_task(channel, afk_channel):
                 embed.add_field(name=" ", value=f"> <@{member["id"]}>. Focando! {random.choice(emojis)} \n <t:{int(epoch)}:R>")
                 embed.set_thumbnail(url=member["avatar"])
 
-                await channel.send(content=f"<@{member["id"]}>", delete_after=1)
-                member["message"] = await channel.send(embed=embed)
+                await focus_channel.send(content=f"<@{member["id"]}>", delete_after=1)
+                member["message"] = await focus_channel.send(embed=embed)
         else:
 
             # verification in voice channel (either for pomodoro or stopwatch)
             member["limit_counter"] += 1
 
-            if member["limit_counter"] > LIMIT:
+            if member["limit_counter"] > SEND_VERIFY_MESSAGE_THRESHOLD:
 
                 if not member["on_verify_message_sent"]:
                     # send to dm
@@ -381,8 +376,8 @@ async def study_counter_task(channel, afk_channel):
                     reaction, user = ('','')
 
                     async def waiting_for_response():
-                        try: 
-                            reaction, user = await member["bot_object"].wait_for(event="reaction_add", check=check_reaction, timeout=WAIT)
+                        try:
+                            reaction, user = await member["bot_object"].wait_for(event="reaction_add", check=check_reaction, timeout=WAIT_TO_VERIFY_THRESHOLD)
                             await dmchannel.send(embed=success)
                             print(f"{reaction} por {user}")
                             member["limit_counter"] = 0
@@ -426,8 +421,8 @@ async def study_counter_task(channel, afk_channel):
                         
                             embed.set_thumbnail(url="https://media.tenor.com/1re8tSKaslIAAAAi/peach-cat-goma.gif")
 
-                        await channel.send(content=f"<@{member["id"]}>", delete_after=1)
-                        member["message"] = await channel.send(embed=embed)
+                        await focus_channel.send(content=f"<@{member["id"]}>", delete_after=1)
+                        member["message"] = await focus_channel.send(embed=embed)
                         
                 else:
 
@@ -456,7 +451,7 @@ def setup(bot):
     bot.add_cog(Timers(bot))
 
 
-def register(cursor, connection, member, on_pomodoro_channel, channel, afk_channel, bot):
+def register(cursor, connection, member, on_pomodoro_channel, focus_channel, afk_channel, bot):
     try: 
         cursor.execute(
         """
@@ -520,7 +515,7 @@ def register(cursor, connection, member, on_pomodoro_channel, channel, afk_chann
         connection.commit()
 
         if not study_counter_task.is_running():
-            study_counter_task.start(channel, afk_channel)
+            study_counter_task.start(focus_channel, afk_channel)
     except Exception as e:
         print(f"{e}")
 
