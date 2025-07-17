@@ -5,7 +5,6 @@ from PIL import Image
 import re
 import os
 
-from matplotlib.offsetbox import (OffsetImage, AnnotationBbox)
 
 async def verify_additional_user_plot(ctx, bot, user : str):
     if user:
