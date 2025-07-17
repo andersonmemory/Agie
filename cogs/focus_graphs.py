@@ -17,7 +17,7 @@ async def verify_additional_user_plot(ctx, bot, user : str):
         user (str): the Discord user ID as a string
 
     Returns:
-        list: a list of two items, the plot and the member object that was validated.
+        [new_plot, member]: a list of two items, the plot object and the member object that was validated.
         Returns None if either user never used the focus counting system or doesn't exist in the server.
     """
 
@@ -144,9 +144,13 @@ def create_plot(user_id, cursor, connection):
 
         Args:
             user_id (int): Discord user identifier
-            cursor (mariadb.cursor)
+            cursor (mariadb.Cursor): cursor to perform the mariadb queries
+            connection (mariadb.Connection): mariadb connector for confirming the queries 
+            in the database
 
         Returns:
+            [x_values, y_values]: a list containing x_axis and y_axis values to be used
+            to generate a plot.
 
         """
 
