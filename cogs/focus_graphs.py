@@ -13,7 +13,7 @@ async def verify_additional_user_plot(ctx, bot, user : str):
 
     Args:
         ctx (discord.Context): the original message context
-        bot (Bot): a Bot instance
+        bot (discord.Bot): a Bot instance
         user (str): the Discord user ID as a string
 
     Returns:
