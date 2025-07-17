@@ -139,6 +139,16 @@ class FocusGraphs(commands.Cog):
 
 
 def create_plot(user_id, cursor, connection):
+        """Creates a plot for the specified user and returns a list with
+        x_axis and y_axis  of the generated plot.
+
+        Args:
+            user_id (int): Discord user identifier
+            cursor (mariadb.cursor)
+
+        Returns:
+
+        """
 
         cursor.execute("""
         SET @initial_date = (
