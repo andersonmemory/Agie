@@ -1,7 +1,7 @@
 
 # Agie
 
-![A image depicting the bot's profile on Discord, showing its banner and main avatar image. The banner is a black and white image with chess pieces while the avatar is a girl with pink hair holding a deck of cards - she is memorizing it.](/.project_images/agie.png)
+![A image depicting the bot's profile on Discord, showing its banner and main avatar image. The banner is a black and white image with chess pieces while the avatar is a girl with pink hair holding a deck of cards - she is memorizing it.](/images/agie.png)
 
 > About the bot:
 
@@ -43,7 +43,7 @@ Fill the envinronment variables inside your ```.env``` file that was automatical
 
 ### Run the bot.
 Do ```python run.py``` and now in the Discord server, use the command ```/get_members``` to populate your database containing Discord users on the server you are in.
-![a](.project_images/get_members.png)
+![a](/images/get_members.png)
 
 > Now you're done!
 
