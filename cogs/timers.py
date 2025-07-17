@@ -1,4 +1,4 @@
-"""Contains a stopwatch and a pomodoro timer for Agie and related functionalities"""
+"""Contains a stopwatch and a pomodoro timer for Agie and related functionalities (e.g.: the focus counting system)"""
 
 import discord
 from discord.ext import commands, tasks
