@@ -10,7 +10,6 @@ import asyncio
 
 import helpers_rankings, helpers_timers
 
-
 LIMIT = (2 * 60) * 60 + (30 * 60) # 2h30 in seconds
 WAIT = (20 * 60) # 20 minutes in seconds
 
@@ -286,6 +285,7 @@ class Timers(commands.Cog):
 
         await ctx.respond(embed=embed)
 
+
 @tasks.loop(seconds=1)
 async def study_counter_task(channel, afk_channel):
 
@@ -454,8 +454,10 @@ async def study_counter_task(channel, afk_channel):
                 # stopwatch feature
                 member["seconds"] += 1
 
+
 def setup(bot):
     bot.add_cog(Timers(bot))
+
 
 def register(cursor, connection, member, on_pomodoro_channel, channel, afk_channel, bot):
     try: 
@@ -524,6 +526,7 @@ def register(cursor, connection, member, on_pomodoro_channel, channel, afk_chann
             study_counter_task.start(channel, afk_channel)
     except Exception as e:
         print(f"{e}")
+
 
 async def remove(cursor, connection, member, channel):
 
@@ -627,6 +630,7 @@ async def remove(cursor, connection, member, channel):
                         await channel.send(embed=embed)
             except:
                 pass
+
 
 def streak_system_logic(cursor, connection, user_id): # TODO: add variable: starting_fucus_session_date
 
