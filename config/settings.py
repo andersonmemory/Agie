@@ -1,4 +1,5 @@
-import dotenv
+"""Provides configuration settings for timers.py"""
+
 from dotenv import load_dotenv
 import os
 load_dotenv()
