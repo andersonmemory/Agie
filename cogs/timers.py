@@ -255,8 +255,8 @@ class Timers(commands.Cog):
         data_formatted = ''
 
         if streak_data_vars[0] != "sem dados":
-            data_formatted = streak_data_vars[0].split(' ')[0]
-            time_formatted = streak_data_vars[1].split(' ')[0]
+            data_formatted = str(streak_data_vars[0]).split(' ')[0]
+            time_formatted = str(streak_data_vars[1]).split(' ')[0]
             embed.add_field(name=" ", value=f"**Última sessão:** {data_formatted} às {time_formatted}", inline=False)
         else:
             embed.add_field(name=" ", value=f"**Última sessão:** {streak_data_vars[0]}", inline=False)
