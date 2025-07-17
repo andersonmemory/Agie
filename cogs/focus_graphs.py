@@ -9,6 +9,18 @@ import os
 
 
 async def verify_additional_user_plot(ctx, bot, user : str):
+    """Verify if user is capable of creating a plot based on his data
+
+    Args:
+        ctx (discord.Context): the original message context
+        bot (Bot): a Bot instance
+        user (str): the Discord user ID as a string
+
+    Returns:
+        list: a list of two items, the plot and the member object that was validated.
+        Returns None if either user never used the focus counting system or doesn't exist in the server.
+    """
+
     if user:
         result = re.search(r"[0-9]+", str(user))
         if result:
@@ -27,6 +39,9 @@ async def verify_additional_user_plot(ctx, bot, user : str):
 
 
 class FocusGraphs(commands.Cog):
+    """Contains all commands related to plots 
+        generation based on user data
+    """
 
     def __init__(self, bot):
         self.bot = bot
@@ -35,6 +50,14 @@ class FocusGraphs(commands.Cog):
     @discord.option("membro1", description="O primeiro membro para o gráfico")
     @discord.option("membro2", description="O segundo membro para o gráfico")
     async def grafico(self, ctx, membro1 : str = None, membro2 : str = None):
+        """Generates a plot based on the member that executed and may also
+        create plots for each member represented in 'membro1' and 'membro2'.
+
+        Args:
+            ctx (discord.Context): Discord context object
+            membro1 (str, optional): The first member for the plot to be generated. Defaults to None.
+            membro2 (str, optional): The second member for the plot to be generated. Defaults to None.
+        """
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
 
