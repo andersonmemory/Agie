@@ -1,8 +1,8 @@
+"""Main file for starting the Bot along with its class definition"""
+
 import discord
 import mariadb
 import random
-
-from discord.ext import tasks
 
 from dotenv import load_dotenv
 import os
