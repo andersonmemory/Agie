@@ -8,7 +8,7 @@ import random
 
 import asyncio
 
-import helpers_rankings, helpers_timers
+from utils import helpers_rankings, helpers_timers
 
 LIMIT = (2 * 60) * 60 + (30 * 60) # 2h30 in seconds
 WAIT = (20 * 60) # 20 minutes in seconds
@@ -285,7 +285,6 @@ class Timers(commands.Cog):
 
         await ctx.respond(embed=embed)
 
-
 @tasks.loop(seconds=1)
 async def study_counter_task(channel, afk_channel):
 
@@ -296,7 +295,6 @@ async def study_counter_task(channel, afk_channel):
 
         # normal stopwatch
         # initialization
-
         if member["message"] == None:
             member["seconds"] = 1
             
@@ -331,7 +329,6 @@ async def study_counter_task(channel, afk_channel):
         else:
 
             # verification in voice channel (either for pomodoro or stopwatch)
-
             member["limit_counter"] += 1
 
             if member["limit_counter"] > LIMIT:
