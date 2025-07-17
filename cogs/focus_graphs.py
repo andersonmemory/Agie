@@ -25,6 +25,7 @@ async def verify_additional_user_plot(ctx, bot, user : str):
     await ctx.send("> ⚠️ : Esse usuário não existe ou ocorreu algum outro erro.", delete_after=15)
     return None
 
+
 class FocusGraphs(commands.Cog):
 
     def __init__(self, bot):
@@ -113,6 +114,7 @@ class FocusGraphs(commands.Cog):
         os.remove("result.png")
         os.remove("graph.png")
 
+
 def create_plot(user_id, cursor, connection):
 
         cursor.execute("""
@@ -174,6 +176,7 @@ def create_plot(user_id, cursor, connection):
         y_values = [float(data_point[1]) for data_point in content]
 
         return [x_values, y_values]
+
 
 def setup(bot):
     bot.add_cog(FocusGraphs(bot))
