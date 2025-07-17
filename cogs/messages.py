@@ -1,4 +1,4 @@
-# Contains all the messages Agie will reply.
+"""Contains all the messages Agie will reply to."""
 
 import discord
 from discord.ext import commands
