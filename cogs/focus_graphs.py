@@ -7,6 +7,12 @@ from PIL import Image
 import re
 import os
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import mariadb
+
 
 async def verify_additional_user_plot(ctx, bot, user : str):
     """Verify if user is capable of creating a plot based on his data
@@ -138,7 +144,7 @@ class FocusGraphs(commands.Cog):
         os.remove("graph.png")
 
 
-def create_plot(user_id, cursor, connection):
+def create_plot(user_id : int, cursor : mariadb.Cursor, connection : mariadb.Connection):
         """Creates a plot for the specified user and returns a list with
         x_axis and y_axis  of the generated plot.
 
