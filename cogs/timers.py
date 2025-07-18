@@ -6,6 +6,12 @@ import time
 import datetime
 import random
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import mariadb
+
 import asyncio
 
 from utils import helpers_rankings, helpers_timers
@@ -281,7 +287,7 @@ class Timers(commands.Cog):
 
 
 @tasks.loop(seconds=1)
-async def study_counter_task(focus_channel, afk_channel):
+async def study_counter_task(focus_channel : discord.TextChannel, afk_channel : discord.TextChannel):
 
     global voice_channel_members
     global emojis
@@ -451,7 +457,16 @@ def setup(bot):
     bot.add_cog(Timers(bot))
 
 
-def register(cursor, connection, member, on_pomodoro_channel, focus_channel, afk_channel, bot):
+def register(
+        cursor : mariadb.Cursor, 
+        connection : mariadb.Connection, 
+        member : discord.Member, 
+        on_pomodoro_channel : discord.TextChannel, 
+        focus_channel : discord.TextChannel, 
+        afk_channel : discord.TextChannel, 
+        bot : discord.Bot
+    ):
+
     try: 
         cursor.execute(
         """
@@ -520,7 +535,7 @@ def register(cursor, connection, member, on_pomodoro_channel, focus_channel, afk
         print(f"{e}")
 
 
-async def remove(cursor, connection, member, channel):
+async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , member : discord.Member , channel : discord.TextChannel):
 
     member_left = 0
     empty = False
@@ -624,7 +639,7 @@ async def remove(cursor, connection, member, channel):
                 pass
 
 
-def streak_system_logic(cursor, connection, user_id): # TODO: add variable: starting_fucus_session_date
+def streak_system_logic(cursor : mariadb.Cursor, connection : mariadb.Connection, user_id : int): # TODO: add variable: starting_fucus_session_date
 
     try: 
         
