@@ -60,7 +60,14 @@ async def number(ctx, inicial: int, final: int):
 
 @bot.command(description="Get all members")
 async def get_members(ctx):
+    """Insert all Discord users in the current server
+    in the database, along with their own associated tables.
+
+    Args:
+        ctx (discord.Context): The context where the feedback message is going to be sent.
+    """
     for member in bot.get_all_members():
+    
         if not member.bot:
 
             try:
@@ -85,6 +92,12 @@ async def get_members(ctx):
 
 @bot.event
 async def on_member_join(member):
+    """Insert a new recently joined user in the current server
+    to the database, along with their own associated tables.
+
+    Args:
+        member (discord.Member): The Discord member that joined the server.
+    """
     try: 
         # Add to discord_users
         bot.cursor.execute("INSERT IGNORE INTO discord_users (id, global_name) VALUES (?, ?)", (member.id, member.global_name))
@@ -104,7 +117,12 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    """Remove a user that left the current server
+    from the database, along with their own associated tables.
 
+    Args:
+        member (discord.Member): The Discord member that left the server.
+    """
     try:
 
         bot.cursor.execute("DELETE FROM discord_users WHERE discord_users.id = (?)", (member.id,))
