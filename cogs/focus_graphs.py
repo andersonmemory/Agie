@@ -1,4 +1,4 @@
-"""Contains commands to create plots based on user data on the focus counting system"""
+"""Contains commands to create plots based on user data on the focus counting system."""
 
 import discord
 from discord.ext import commands
@@ -60,7 +60,7 @@ class FocusGraphs(commands.Cog):
         create plots for each member represented in 'membro1' and 'membro2'.
 
         Args:
-            ctx (discord.Context): Discord context object
+            ctx (discord.Context): Discord context object.
             membro1 (str, optional): The first member for the plot to be generated. Defaults to None.
             membro2 (str, optional): The second member for the plot to be generated. Defaults to None.
         """
@@ -149,10 +149,9 @@ def create_plot(user_id : int, cursor : mariadb.Cursor, connection : mariadb.Con
         x_axis and y_axis  of the generated plot.
 
         Args:
-            user_id (int): Discord user identifier
-            cursor (mariadb.Cursor): cursor to perform the mariadb queries
-            connection (mariadb.Connection): mariadb connector for confirming the queries 
-            in the database
+            user_id (int): Discord user identifier.
+            cursor (mariadb.Cursor): Database cursor for SQL operations.
+            connection (mariadb.Connection): Database connection object.
 
         Returns:
             [x_values, y_values]: a list containing x_axis and y_axis values to be used
