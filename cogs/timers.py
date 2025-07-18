@@ -1,4 +1,4 @@
-"""Contains a stopwatch and a pomodoro timer for Agie and related functionalities (e.g.: the focus counting system)"""
+"""Contains a stopwatch and a pomodoro timer for Agie and related functionalities (e.g.: the focus counting system)."""
 
 import discord
 from discord.ext import commands, tasks
@@ -129,6 +129,7 @@ class Timers(commands.Cog):
 
     @discord.slash_command(description="Mostra seu status de foco incluindo seus streaks")
     async def foco(self, ctx):
+        """Shows member focus status including it streaks information."""
 
         self.connection = self.bot.connection
         self.cursor = self.bot.cursor
@@ -287,7 +288,15 @@ class Timers(commands.Cog):
 
 
 @tasks.loop(seconds=1)
-async def study_counter_task(focus_channel : discord.TextChannel, afk_channel : discord.TextChannel):
+async def study_counter_task(focus_channel : discord.TextChannel, afk_channel : discord.VoiceChannel):
+    """Contains the code logic for focus counting system
+    for pomodoro and stopwatch, including a verification system
+    to avoid users be AFK while counting as focused time.
+
+    Args:
+        focus_channel (discord.TextChannel): The text channel where the user status messages will appear.
+        afk_channel (discord.VoiceChannel): The voice channel where the user will be moved to when he didn't verify.
+    """
 
     global voice_channel_members
     global emojis
@@ -461,11 +470,23 @@ def register(
         cursor : mariadb.Cursor, 
         connection : mariadb.Connection, 
         member : discord.Member, 
-        on_pomodoro_channel : discord.TextChannel, 
+        on_pomodoro_channel : discord.VoiceChannel, 
         focus_channel : discord.TextChannel, 
-        afk_channel : discord.TextChannel, 
+        afk_channel : discord.VoiceChannel, 
         bot : discord.Bot
     ):
+    """Adds the user to the voice_channel_members list.
+
+    Args:
+        cursor (mariadb.Cursor): Database cursor for SQL operations.
+        connection (mariadb.Connection): Database connection object.
+        member (discord.Member): The Discord member being registered.
+        on_pomodoro_channel (discord.VoiceChannel): The channel where user is connected, could
+        be either for the stopwatch or the pomodoro. Named pomodoro for convention.
+        focus_channel (discord.TextChannel): The text channel where the user status messages will appear.
+        afk_channel (discord.VoiceChannel): The voice channel where the user will be moved to when he didn't verify.
+        bot (discord.Bot): The Discord bot object.
+    """
 
     try: 
         cursor.execute(
@@ -535,8 +556,16 @@ def register(
         print(f"{e}")
 
 
-async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , member : discord.Member , channel : discord.TextChannel):
+async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , member : discord.Member , focus_channel : discord.TextChannel):
+    """Removes the user from the voice_channel_members list.
 
+    Args:
+        cursor (mariadb.Cursor): Database cursor for SQL operations.
+        connection (mariadb.Connection): Database connection object.
+        member (discord.Member): The Discord member being registered.
+        focus_channel (discord.TextChannel): The text channel where the user status messages will appear.
+
+    """
     member_left = 0
     empty = False
 
@@ -570,12 +599,12 @@ async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , memb
                 if member_left["pomodoro_enabled"] and member_left["pomodoro"] * member_left["current_round"] < 60 and not member_left["on_break"] and member_left["seconds"] < 60:
                     await member_left["message"].delete()
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
-                    await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
+                    await focus_channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
                 
                 elif not member_left["pomodoro_enabled"] and member_left["seconds"] < 60:
                     await member_left["message"].delete()
                     embed.add_field(name=" ", value=f"{member_left['global_name']}, você deve ficar por pelo menos um minuto para registrar seu tempo!")
-                    await channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
+                    await focus_channel.send(content=f"<@{member_left["id"]}>", embed=embed, delete_after=5)
 
                 else:
                     
@@ -612,8 +641,8 @@ async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , memb
                         cursor.execute("INSERT INTO focus_sessions (focus_datetime, duration_minutes, user_id) VALUES (?, ?, ?)", (date, total_minutes, user_id)) 
                         connection.commit()
 
-                        await channel.send(content=f"<@{member_left["id"]}>", delete_after=1)
-                        await channel.send(embed=embed)
+                        await focus_channel.send(content=f"<@{member_left["id"]}>", delete_after=1)
+                        await focus_channel.send(embed=embed)
 
                     else:
 
@@ -633,14 +662,21 @@ async def remove(cursor : mariadb.Cursor, connection : mariadb.Connection , memb
                         
                         connection.commit()
 
-                        await channel.send(content=f"<@{member_left["id"]}>", delete_after=1)
-                        await channel.send(embed=embed)
+                        await focus_channel.send(content=f"<@{member_left["id"]}>", delete_after=1)
+                        await focus_channel.send(embed=embed)
             except:
                 pass
 
 
 def streak_system_logic(cursor : mariadb.Cursor, connection : mariadb.Connection, user_id : int): # TODO: add variable: starting_fucus_session_date
+    """Code logic for making the streak system
+    to work with the focus counting system.
 
+    Args:
+        cursor (mariadb.Cursor): Database cursor for SQL operations.
+        connection (mariadb.Connection): Database connection object. 
+        user_id (int): user_id (int): Discord user identifier.
+    """
     try: 
         
         # Update inserting last session date if there was one
