@@ -7,12 +7,23 @@ from utils import helpers, modals
 import datetime
 
 class Moderation(commands.Cog):
+    """Contains all commands related to moderation 
+        and administration with passwords.
+    """
 
     def __init__(self, bot):
         self.bot = bot
 
     @discord.slash_command(description="adiciona admin")
     async def add_admin(self, ctx, member, password):
+        """Adds specified member to the moderators table, creating its own
+        unique password associated with, protected by hashing algorithms (bcrypt)
+
+        Args:
+            ctx (discord.ApplicationContext): The context where the feedback message is going to be sent.
+            member (discord.Member): The Discord member being added as moderator.
+            password (str): The new moderator password.
+        """
 
         member_id = ''
 
@@ -44,6 +55,13 @@ class Moderation(commands.Cog):
 
     @discord.slash_command(description="Reporta warn em um usuário.")
     async def warn(self, ctx, usuario: str, motivo: str):
+        """Warns specified member. It requires a password from the moderator in order to work.
+
+        Args:
+        ctx (discord.ApplicationContext): The context where the feedback message is going to be sent.
+            usuario (str): The Discord member's mention string (e.g., "<@user_id>") who is being warned.
+            motivo (str): The reason of the warn.
+        """
 
         channel = self.bot.get_channel(1382123737368756355)
 
@@ -112,6 +130,13 @@ class Moderation(commands.Cog):
     @discord.slash_command(description="Reporta banimento em um usuário.")
     @discord.default_permissions(ban_members=True)
     async def ban(self, ctx, usuario: str, motivo: str):
+        """Bans specified member. It requires a password from the moderator in order to work.
+
+        Args:
+        ctx (discord.ApplicationContext): The context where the feedback message is going to be sent.
+            usuario (str): The Discord member's mention string (e.g., "<@user_id>") who is being banned.
+            motivo (str): The reason of the ban.
+        """
 
         channel = self.bot.get_channel(1382123737368756355)
 
