@@ -64,7 +64,7 @@ async def get_members(ctx):
     in the database, along with their own associated tables.
 
     Args:
-        ctx (discord.Context): The context where the feedback message is going to be sent.
+        ctx (discord.ApplicationContext): The context where the feedback message is going to be sent.
     """
     for member in bot.get_all_members():
     
