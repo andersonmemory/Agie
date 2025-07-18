@@ -18,9 +18,9 @@ async def verify_additional_user_plot(ctx, bot, user : str):
     """Verify if user is capable of creating a plot based on his data
 
     Args:
-        ctx (discord.Context): the original message context
-        bot (discord.Bot): a Bot instance
-        user (str): the Discord user ID as a string
+        ctx (discord.ApplicationContext): the original message context.
+        bot (discord.Bot): a Bot instance.
+        user (str): the Discord user ID as a string.
 
     Returns:
         [new_plot, member]: a list of two items, the plot object and the member object that was validated.
@@ -46,7 +46,7 @@ async def verify_additional_user_plot(ctx, bot, user : str):
 
 class FocusGraphs(commands.Cog):
     """Contains all commands related to plots 
-        generation based on user data
+        generation based on user data.
     """
 
     def __init__(self, bot):
@@ -60,7 +60,7 @@ class FocusGraphs(commands.Cog):
         create plots for each member represented in 'membro1' and 'membro2'.
 
         Args:
-            ctx (discord.Context): Discord context object.
+            ctx (discord.ApplicationContext): Discord context object.
             membro1 (str, optional): The first member for the plot to be generated. Defaults to None.
             membro2 (str, optional): The second member for the plot to be generated. Defaults to None.
         """
