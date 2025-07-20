@@ -1,3 +1,7 @@
+    """Contain all Modals for the moderator ban/warn system to insert the password
+    and for the pomodoro personalization settings for appearance and time.
+    """
+
 import discord
 import helpers
 import re
@@ -17,6 +21,8 @@ class MyModal(discord.ui.Modal,):
         embed.add_field(name=" ", value=self.children[0].value)
 
 class Pomodoro(discord.ui.Modal,):
+    """Sets the time settings for the pomodoro
+    """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
@@ -50,6 +56,9 @@ class Pomodoro(discord.ui.Modal,):
             await interaction.response.send_message(embeds=[embed], ephemeral=True)
 
 class PomoAppearenceImageValidateModal(discord.ui.Modal):
+    """Sets the appearance of the pomodoro, including
+    its color and personalized gif image for break time.
+    """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
     
