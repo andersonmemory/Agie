@@ -2,3 +2,8 @@
 .env
 __pycache__/
 testing/
+
+# Sphinx-related
+
+_build/
+_templates/
