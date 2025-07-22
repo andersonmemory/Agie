@@ -1,6 +1,6 @@
-    """Contain all Modals for the moderator ban/warn system to insert the password
+"""Contain all Modals for the moderator ban/warn system to insert the password
     and for the pomodoro personalization settings for appearance and time.
-    """
+"""
 
 import discord
 import helpers
