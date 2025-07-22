@@ -1,4 +1,5 @@
 """Contains commands to create plots based on user data on the focus counting system."""
+from __future__ import annotations
 
 import discord
 from discord.ext import commands
@@ -7,7 +8,6 @@ from PIL import Image
 import re
 import os
 
-from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
