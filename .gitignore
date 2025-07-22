@@ -7,3 +7,4 @@ testing/
 
 _build/
 _templates/
+_static/
