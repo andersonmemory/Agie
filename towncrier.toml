@@ -1,6 +1,6 @@
 [tool.towncrier]
 directory = "changelog.d"
-filename = "CHANGELOG.rst"
+filename = "CHANGELOG.md"
 start_string = "<!-- towncrier release notes start -->\n"
 underlines = ["", "", ""]
 
