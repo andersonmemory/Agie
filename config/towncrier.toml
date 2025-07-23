@@ -3,8 +3,9 @@ directory = "changelog.d"
 filename = "CHANGELOG.rst"
 start_string = "<!-- towncrier release notes start -->\n"
 underlines = ["", "", ""]
-title_format = "## [{version}](https://github.com/twisted/my-project/tree/{version}) - {project_date}"
-issue_format = "[#{issue}](https://github.com/twisted/my-project/issues/{issue})"
+
+title_format = "## [{version}](https://github.com/andersonmemory/Agie/tree/{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/andersonmemory/Agie/issues/{issue})"
 
 [[tool.towncrier.type]]
 directory = "security"
