@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path('..').resolve()))
 sys.path.insert(0, str(Path('..', 'src').resolve()))
 sys.path.insert(0, str(Path('..', 'src/utils').resolve()))
 sys.path.insert(0, str(Path('..', 'src/cogs').resolve()))
+sys.path.insert(0, str(Path('..', 'src/config').resolve()))
 
 # Define the 'coro' substitution for async functions
 rst_epilog = """
