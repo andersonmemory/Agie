@@ -27,7 +27,7 @@ Release process
 
 .. code-block:: console
 
-    $ make clean # its important to execute this before
+    $ make clean # it's important to execute this before
     $ make html
 
 8. Now push these new file changes and submit the release.
