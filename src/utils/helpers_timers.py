@@ -1,5 +1,5 @@
 import discord
-import modals
+from utils import modals
 
 import mariadb
 
