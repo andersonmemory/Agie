@@ -3,7 +3,6 @@
 """
 
 import discord
-import helpers
 import re
 
 
