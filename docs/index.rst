@@ -19,3 +19,5 @@ See :ref:`commands_page`.
    
    api_reference
    commands
+   release-notes
+   release-process
