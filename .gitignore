@@ -6,5 +6,4 @@ testing/
 # Sphinx-related
 
 _build/
-_templates/
 _static/
