@@ -1,0 +1,2 @@
+Sphinx==8.2.3
+sphinx_press_theme==0.9.1 
