@@ -55,8 +55,7 @@ bot.cursor = ""
 
 
 async def keep_db_alive():
-    """ Prevents database from shutdown 
-    after the eight hours limit posed by mariadb. """
+    """ Prevents termination of database connections after 8 hours of inactivity. """
     while True:
         bot.cursor.execute(
         """
