@@ -40,7 +40,7 @@ class Agie(discord.Bot): # subclass discord.Bot
 
             self.cursor = self.connection.cursor()
 
-            asyncio.create_task(keep_db_alive)
+            asyncio.create_task(keep_db_alive())
 
             print("connected successfully to the database")
             print('-------------------------------------')
