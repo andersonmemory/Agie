@@ -3,6 +3,7 @@
 import discord
 import mariadb
 import random
+import asyncio
 
 from dotenv import load_dotenv
 import os
@@ -39,15 +40,29 @@ class Agie(discord.Bot): # subclass discord.Bot
 
             self.cursor = self.connection.cursor()
 
+            asyncio.create_task(keep_db_alive)
+
             print("connected successfully to the database")
             print('-------------------------------------')
 
         except mariadb.Error as e:
             print(f"Couldn't connect to MariaDB server {e}")
 
+
 bot = Agie(intents=intents)
 bot.connection = ""
 bot.cursor = ""
+
+
+async def keep_db_alive():
+    """ Prevents database from shutdown 
+    after the eight hours limit posed by mariadb. """
+    while True:
+        bot.cursor.execute(
+        """
+            SELECT 1;
+        """)
+        await asyncio.sleep(60 * 60 * 4)
 
 @bot.command(description="Mostra latência do bot")
 async def ping(ctx):
