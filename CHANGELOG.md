@@ -1,4 +1,4 @@
-## [0.1.2](https://github.com/andersonmemory/Agie/tree/0.1.2) - 2025-11-09
+## [0.1.1](https://github.com/andersonmemory/Agie/tree/0.1.1) - 2025-11-09
 
 ### Fixed
 
